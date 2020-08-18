@@ -62,16 +62,22 @@ def creating_file(company_name, tweets):
 
 
 def getting_tweets_data(tweets, month, year, company_name):
-        key_words = ["webinar", "webcast"]
-        data = []
-        for tweet in tweets:
-            lower_full_text = tweet.full_text.lower()
-            if any(word in lower_full_text for word in key_words):
-                relevant_data = {"company_name": company_name,
+    """
+     Gets the webinar details from tweets of provided company
+
+     :param company_name: the company handle in twitter
+     :return: the twitter object of the tweets
+     """
+    key_words = ["webinar", "webcast"]
+    data = []
+    for tweet in tweets:
+        lower_full_text = tweet.full_text.lower()
+        if any(word in lower_full_text for word in key_words):
+            relevant_data = {"company_name": company_name,
                     "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
                     "tweet_text": tweet.full_text.encode("utf-8"),
                     "image_link": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
                     "webinar_link": tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""}
-                data.append(relevant_data)
-        return data
+            data.append(relevant_data)
+    return data
 
