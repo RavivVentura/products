@@ -2,7 +2,6 @@
 import tweepy
 from tweepy import OAuthHandler
 import csv
-import sys
 
 
 def get_tweets(company_name):
@@ -10,7 +9,7 @@ def get_tweets(company_name):
      Gets the webinar details from tweets of provided company
 
      :param company_name: the company handle in twitter
-     :return: None
+     :return: the twitter object of the tweets
      """
     consumer_key = 'CzPmtFS34RHV78Yl3U2fRgr6V'
     consumer_secret = 'DT0SbM5JrJhbZrkpbRLhcUegKN5VYGnzWDXpIIfydhJNwJiCuC'
@@ -30,8 +29,18 @@ def get_tweets(company_name):
     # getting the tweets from twitter, we use the "extended" mode
     # because this is the way to get the full text of the tweet
     results = api.user_timeline(id=name, count=tweet_count, tweet_mode="extended")
+    return results
 
-    with open(f"{name} webinars.csv", "w",  newline='') as ofile:
+
+def creating_file(company_name, tweets):
+    """
+    Gets the webinar details from tweets of provided company
+
+    :param company_name: the company handle in twitter
+                tweets: the twitter object of the tweets
+    :return: None
+    """
+    with open(f"./Webinars/{company_name} webinars.csv", "w",  newline='') as ofile:
         writer = csv.DictWriter(ofile, fieldnames=["company_name", "name", "description", "link", "start_date",
                                                    "host_company_domains", "image", "tweet_link", "tweet_text",
                                                    "webinar_link", "image_link", ])
@@ -40,17 +49,29 @@ def get_tweets(company_name):
         # we only look for these keywords in the tweets
         key_words = ["webinar", "webcast"]
 
-        for tweet in results:
+        for tweet in tweets:
             lower_full_text = tweet.full_text.lower()
             if any(word in lower_full_text for word in key_words):
                 writer.writerow({
                     "company_name": company_name,
-                    "tweet_link": 'https://twitter.com/%s/status/%s' % (name, tweet.id_str),
+                    "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
                     "tweet_text": tweet.full_text,
                     "image_link": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
                     "webinar_link": tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""
                 })
 
 
-if __name__ == "__main__":
-    get_tweets(sys.argv[1])
+def getting_tweets_data(tweets, month, year, company_name):
+        key_words = ["webinar", "webcast"]
+        data = []
+        for tweet in tweets:
+            lower_full_text = tweet.full_text.lower()
+            if any(word in lower_full_text for word in key_words):
+                relevant_data = {"company_name": company_name,
+                    "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
+                    "tweet_text": tweet.full_text.encode("utf-8"),
+                    "image_link": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
+                    "webinar_link": tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""}
+                data.append(relevant_data)
+        return data
+
