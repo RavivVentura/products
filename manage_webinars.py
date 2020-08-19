@@ -8,6 +8,12 @@ import csv
 
 
 def filter_date_tweet(start_date, tweets):
+    """
+         Gets the tweets that created after a specific date(start_date)
+         :param start_date: the date that from him we want the tweets
+                tweets: the tweets of the company profile (200 because of the twitter limit)
+         :return: the tweets that created after start_date
+    """
     filtered_tweets = []
     for tweet in tweets:
         if tweet.created_at > start_date:
@@ -16,6 +22,12 @@ def filter_date_tweet(start_date, tweets):
 
 
 def monthly_update(start_date, file):
+    """
+             Create a csv file with all the companies webinars since the start date
+             :param start_date: the date that from him we want the tweets
+                    file: file with all the companies names that we want to update their webinars
+             :return: none
+    """
     month = start_date.month
     year = start_date.year
     with open(f"./Updates/{month} {year} webinars.csv", "w", newline='') as ofile:
@@ -28,7 +40,7 @@ def monthly_update(start_date, file):
             company = row['twitter']
             tweets = get_tweets(company)
             relevant_tweets = filter_date_tweet(start_date, tweets)
-            tweets_data = getting_tweets_data(relevant_tweets, month, year, company)
+            tweets_data = getting_tweets_data(relevant_tweets, company)
             for tweet in tweets_data:
                 writer.writerow({
                         "company_name": tweet["company_name"],
@@ -40,6 +52,7 @@ def monthly_update(start_date, file):
 
 
 if __name__ == "__main__":
+    # checking if the command is to create a file for new company or making a monthly update
     if "csv" in sys.argv[1]:
         file_name = sys.argv[1]
         date = sys.argv[2]

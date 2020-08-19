@@ -1,3 +1,4 @@
+from datetime import datetime
 
 import tweepy
 from tweepy import OAuthHandler
@@ -34,10 +35,11 @@ def get_tweets(company_name):
 
 def creating_file(company_name, tweets):
     """
-    Gets the webinar details from tweets of provided company
+    Create a csv file with all the relevant details of the company webinars
+    and only do that for tweets that created after 01/01/2020
 
-    :param company_name: the company handle in twitter
-                tweets: the twitter object of the tweets
+    :param company_name: the company twitter handle
+                tweets: the company tweets
     :return: None
     """
     with open(f"./Webinars/{company_name} webinars.csv", "w",  newline='') as ofile:
@@ -50,23 +52,25 @@ def creating_file(company_name, tweets):
         key_words = ["webinar", "webcast"]
 
         for tweet in tweets:
-            lower_full_text = tweet.full_text.lower()
-            if any(word in lower_full_text for word in key_words):
-                writer.writerow({
-                    "company_name": company_name,
-                    "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
-                    "tweet_text": tweet.full_text,
-                    "image_link": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
-                    "webinar_link": tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""
-                })
+            if tweet.created_at > datetime.strptime("01/01/2020", "%d/%m/%Y"):
+                lower_full_text = tweet.full_text.lower()
+                if any(word in lower_full_text for word in key_words):
+                    writer.writerow({
+                        "company_name": company_name,
+                        "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
+                        "tweet_text": tweet.full_text,
+                        "image_link": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
+                        "webinar_link": tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""
+                    })
 
 
-def getting_tweets_data(tweets, month, year, company_name):
+def getting_tweets_data(tweets, company_name):
     """
-     Gets the webinar details from tweets of provided company
+     Gets the relevant data from the tweets
 
-     :param company_name: the company handle in twitter
-     :return: the twitter object of the tweets
+     :param company_name: the company twitter handle
+            tweets: the  relevant tweets (tweets that were filtered by date)
+     :return: the relevant data of the tweets.
      """
     key_words = ["webinar", "webcast"]
     data = []
