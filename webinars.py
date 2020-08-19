@@ -33,6 +33,13 @@ def get_tweets(company_name):
     return results
 
 
+def retweet_check(tweet):
+    if tweet.retweeted:
+        return tweet.retweeted_status.full_text.lower()
+    else:
+        return tweet.full_text.lower()
+
+
 def creating_file(company_name, tweets):
     """
     Create a csv file with all the relevant details of the company webinars
@@ -53,7 +60,8 @@ def creating_file(company_name, tweets):
 
         for tweet in tweets:
             if tweet.created_at > datetime.strptime("01/01/2020", "%d/%m/%Y"):
-                lower_full_text = tweet.full_text.lower()
+                # lower_full_text = tweet.full_text.lower()
+                lower_full_text = retweet_check(tweet)
                 if any(word in lower_full_text for word in key_words):
                     writer.writerow({
                         "company_name": company_name,
