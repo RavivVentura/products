@@ -1,8 +1,11 @@
 from datetime import datetime
-
 import tweepy
 from tweepy import OAuthHandler
 import csv
+import requests
+
+
+rel_date = datetime.strptime("01/02/2020", "%d/%m/%Y")
 
 
 def get_tweets(company_name):
@@ -34,9 +37,9 @@ def get_tweets(company_name):
 
 
 def retweet_check(tweet):
-    if tweet.retweeted:
+    try:
         return tweet.retweeted_status.full_text.lower()
-    else:
+    except AttributeError:  # Not a retweet
         return tweet.full_text.lower()
 
 
@@ -49,7 +52,7 @@ def creating_file(company_name, tweets):
                 tweets: the company tweets
     :return: None
     """
-    with open(f"./Webinars/{company_name} webinars.csv", "w",  newline='') as ofile:
+    with open(f"./Webinars/{company_name} webinars.csv", "w", encoding="utf-8", newline='') as ofile:
         writer = csv.DictWriter(ofile, fieldnames=["company_name", "name", "description", "link", "start_date",
                                                    "host_company_domains", "image", "tweet_link", "tweet_text",
                                                    "webinar_link", "image_link", ])
@@ -58,18 +61,24 @@ def creating_file(company_name, tweets):
         # we only look for these keywords in the tweets
         key_words = ["webinar", "webcast"]
 
-        for tweet in tweets:
-            if tweet.created_at > datetime.strptime("01/01/2020", "%d/%m/%Y"):
-                # lower_full_text = tweet.full_text.lower()
+        while tweets[-1].created_at > rel_date:
+            second_tweets = search_until(tweets[-1].id_str, company_name)
+            tweets = tweets + second_tweets
+
+        ready_tweets = remove_duplicate_webinars(tweets)
+
+        for tweet in ready_tweets:
+            if tweet.created_at > rel_date:
                 lower_full_text = retweet_check(tweet)
                 if any(word in lower_full_text for word in key_words):
-                    writer.writerow({
-                        "company_name": company_name,
-                        "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
-                        "tweet_text": tweet.full_text,
-                        "image_link": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
-                        "webinar_link": tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""
-                    })
+                        ready_tweet = check_webinar_links(tweet)
+                        writer.writerow({
+                            "company_name": company_name,
+                            "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, ready_tweet.id_str),
+                            "tweet_text": ready_tweet.full_text,
+                            "image_link": ready_tweet.entities['media'][0]['media_url'] if 'media' in ready_tweet.entities else "",
+                            "webinar_link": ready_tweet.entities['urls'][0]['expanded_url'] if len(ready_tweet.entities['urls']) != 0 else ""
+                        })
 
 
 def getting_tweets_data(tweets, company_name):
@@ -93,3 +102,56 @@ def getting_tweets_data(tweets, company_name):
             data.append(relevant_data)
     return data
 
+
+def search_until(last_id, company_name):
+    """
+         Creating a request to twitter and get 200 tweets that are until a  specific date(last_date)
+
+         :param last_date: the company twitter handle
+         :return: the relevant data of the tweets.
+    """
+    consumer_key = 'CzPmtFS34RHV78Yl3U2fRgr6V'
+    consumer_secret = 'DT0SbM5JrJhbZrkpbRLhcUegKN5VYGnzWDXpIIfydhJNwJiCuC'
+    access_token = '1291269809238401027-nfUpPvj1L56g5UHey0KsyV4ai727Jm'
+    access_secret = 'fmNaUuFb8hNWCbFNNOO5tGb1Hyz1plZlBh2DI2uOTht4l'
+
+    auth = OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_secret)
+    api = tweepy.API(auth, wait_on_rate_limit=True)
+    result = api.user_timeline(id=company_name, count=200, tweet_mode='extended', max_id=last_id)
+    return result
+
+
+def remove_duplicate_webinars(tweets):
+    """
+             remove duplicate webinars according to webinar link.
+
+             :param tweets: the tweets of the company
+             :return: the tweets after removing the tweets that has the same webinar link.
+    """
+    seen = {}
+    for tweet in tweets:
+        if len(tweet.entities['urls']) != 0:
+            if tweet.entities['urls'][0]['expanded_url'] in seen.keys():
+                tweets.remove(tweet)
+            else:
+                seen[tweet.entities['urls'][0]['expanded_url']] = 1
+    return tweets
+
+
+def check_webinar_links(tweet):
+    """
+                 check if the webinar link is valid
+
+                 :param tweet: the tweet of the company
+                 :return: the tweet as it was if is webinar link is valid otherwise instead of webinar link it will
+                 have empty string instead
+    """
+    if len(tweet.entities['urls']) != 0:
+        try:
+            response = requests.get(tweet.entities['urls'][0]['expanded_url'])
+            if response.status_code != 200:
+                tweet.entities['urls'][0]['expanded_url'] = ""
+        except:
+            pass
+    return tweet

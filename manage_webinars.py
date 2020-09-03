@@ -4,6 +4,7 @@ from webinars import get_tweets
 from webinars import creating_file
 from webinars import getting_tweets_data
 from datetime import datetime
+from webinars import search_until
 import csv
 
 
@@ -30,7 +31,7 @@ def monthly_update(start_date, file):
     """
     month = start_date.month
     year = start_date.year
-    with open(f"./Updates/{month} {year} webinars.csv", "w", newline='') as ofile:
+    with open(f"./Updates/{month} {year} webinars.csv", "w", encoding="utf-8", newline='') as ofile:
         writer = csv.DictWriter(ofile, fieldnames=["company_name", "name", "description", "link", "start_date",
                                                    "host_company_domains", "image", "tweet_link", "tweet_text",
                                                  "webinar_link", "image_link"])
@@ -49,6 +50,7 @@ def monthly_update(start_date, file):
                         "image_link": tweet["image_link"],
                         "webinar_link": tweet["webinar_link"]
                     })
+            print(f"finished writing {company} updates")
 
 
 if __name__ == "__main__":
@@ -58,6 +60,7 @@ if __name__ == "__main__":
         date = sys.argv[2]
         start_date = datetime.strptime(date, "%d/%m/%Y")
         monthly_update(start_date, file_name)
+
     else:
         company_name = sys.argv[1]
         results = get_tweets(company_name)
