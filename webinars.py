@@ -3,10 +3,17 @@ import tweepy
 from tweepy import OAuthHandler
 import csv
 import requests
+import pytesseract
+from PIL import Image
+import textrazor
+import urllib
 
 
-rel_date = datetime.strptime("01/02/2020", "%d/%m/%Y")
 
+rel_date = datetime.strptime("01/04/2020", "%d/%m/%Y")
+number_of_image = 1
+
+textrazor.api_key = "802487dc0385c08292d01d6ead89d12edc6278fd9915bbf8f7426c2e"
 
 def get_tweets(company_name):
     """
@@ -46,7 +53,7 @@ def retweet_check(tweet):
 def creating_file(company_name, tweets):
     """
     Create a csv file with all the relevant details of the company webinars
-    and only do that for tweets that created after 01/01/2020
+    and only do that for tweets that created after six month ago.
 
     :param company_name: the company twitter handle
                 tweets: the company tweets
@@ -71,14 +78,15 @@ def creating_file(company_name, tweets):
             if tweet.created_at > rel_date:
                 lower_full_text = retweet_check(tweet)
                 if any(word in lower_full_text for word in key_words):
-                        ready_tweet = check_webinar_links(tweet)
-                        writer.writerow({
-                            "company_name": company_name,
-                            "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, ready_tweet.id_str),
-                            "tweet_text": ready_tweet.full_text,
-                            "image_link": ready_tweet.entities['media'][0]['media_url'] if 'media' in ready_tweet.entities else "",
-                            "webinar_link": ready_tweet.entities['urls'][0]['expanded_url'] if len(ready_tweet.entities['urls']) != 0 else ""
-                        })
+                    # ready_tweet = check_webinar_links(tweet)
+                    # extract_text_from_image(tweet, 1)
+                    writer.writerow({
+                        "company_name": company_name,
+                        "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
+                        "tweet_text": tweet.full_text,
+                        "image_link": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
+                        "webinar_link": unshorten_url(tweet.entities['urls'][0]['expanded_url']) if len(tweet.entities['urls']) != 0 else "",
+                    })
 
 
 def getting_tweets_data(tweets, company_name):
@@ -89,16 +97,18 @@ def getting_tweets_data(tweets, company_name):
             tweets: the  relevant tweets (tweets that were filtered by date)
      :return: the relevant data of the tweets.
      """
+    global number_of_image
     key_words = ["webinar", "webcast"]
     data = []
     for tweet in tweets:
         lower_full_text = tweet.full_text.lower()
         if any(word in lower_full_text for word in key_words):
+            # extract_text_from_image(tweet, number_of_image)
             relevant_data = {"company_name": company_name,
                     "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
                     "tweet_text": tweet.full_text.encode("utf-8"),
-                    "image_link": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
-                    "webinar_link": tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""}
+                    "image": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
+                    "link": tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""}
             data.append(relevant_data)
     return data
 
@@ -132,10 +142,16 @@ def remove_duplicate_webinars(tweets):
     seen = {}
     for tweet in tweets:
         if len(tweet.entities['urls']) != 0:
-            if tweet.entities['urls'][0]['expanded_url'] in seen.keys():
+            expanded_url = unshorten_url(tweet.entities['urls'][0]['expanded_url'])
+            try:
+                expanded_url = unshorten_url(tweet.entities['urls'][0]['expanded_url'])
+            except requests.exceptions.ConnectionError:
+                requests.status_code = "Connection refused"
+                expanded_url = ""
+            if expanded_url in seen.keys():
                 tweets.remove(tweet)
             else:
-                seen[tweet.entities['urls'][0]['expanded_url']] = 1
+                seen[expanded_url] = 1
     return tweets
 
 
@@ -155,3 +171,29 @@ def check_webinar_links(tweet):
         except:
             pass
     return tweet
+
+
+def extract_text_from_image(tweet, image_num):
+    global number_of_image
+    if 'media' in tweet.entities:
+        image_url = tweet.entities['media'][0]['media_url']
+        filename = image_num
+        try:
+            urllib.request.urlretrieve(image_url, f"./Webinars_Images/{filename}.jpg")
+        except:
+            print("couldn't save image")
+        pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Shani\AppData\Local\Tesseract-OCR\tesseract.exe'
+
+        with open(f"./Webinars_Images/{image_num}.txt", "w") as text_file:
+            text_file.write(pytesseract.image_to_string(Image.open(f"./Webinars_Images/{filename}.jpg")))
+        number_of_image += 1
+
+        client = textrazor.TextRazor(extractors=["entities", "topics"])
+        response = client.analyze(pytesseract.image_to_string(Image.open(f"./Webinars_Images/{filename}.jpg")))
+
+        for entity in response.entities():
+            print(entity.id, entity.freebase_types)
+
+
+def unshorten_url(url):
+    return requests.head(url, allow_redirects=True).url

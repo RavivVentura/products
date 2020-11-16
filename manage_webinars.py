@@ -33,8 +33,7 @@ def monthly_update(start_date, file):
     year = start_date.year
     with open(f"./Updates/{month} {year} webinars.csv", "w", encoding="utf-8", newline='') as ofile:
         writer = csv.DictWriter(ofile, fieldnames=["company_name", "name", "description", "link", "start_date",
-                                                   "host_company_domains", "image", "tweet_link", "tweet_text",
-                                                 "webinar_link", "image_link"])
+                                                   "host_company_domains", "image", "tweet_link", "tweet_text"])
         writer.writeheader()
         companies_file = csv.DictReader(open(file))
         for row in companies_file:
@@ -47,8 +46,8 @@ def monthly_update(start_date, file):
                         "company_name": tweet["company_name"],
                         "tweet_link": tweet["tweet_link"],
                         "tweet_text": tweet["tweet_text"],
-                        "image_link": tweet["image_link"],
-                        "webinar_link": tweet["webinar_link"]
+                        "image": tweet["image"],
+                        "link": tweet["link"]
                     })
             print(f"finished writing {company} updates")
 
