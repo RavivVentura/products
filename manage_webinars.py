@@ -1,6 +1,6 @@
 import sys
 import tweepy
-from webinars import get_tweets
+from webinars import get_all_tweets
 from webinars import creating_file
 from webinars import getting_tweets_data
 from datetime import datetime
@@ -38,7 +38,7 @@ def monthly_update(start_date, file):
         companies_file = csv.DictReader(open(file))
         for row in companies_file:
             company = row['twitter']
-            tweets = get_tweets(company)
+            tweets = get_all_tweets(company)
             relevant_tweets = filter_date_tweet(start_date, tweets)
             tweets_data = getting_tweets_data(relevant_tweets, company)
             for tweet in tweets_data:
@@ -54,6 +54,8 @@ def monthly_update(start_date, file):
 
 if __name__ == "__main__":
     # checking if the command is to create a file for new company or making a monthly update
+    # types of commands : python manage_webinars.py Companies_list.csv since_date ,
+    #                     python manage_webinars.py CompanyTwitterName
     if "csv" in sys.argv[1]:
         file_name = sys.argv[1]
         date = sys.argv[2]
@@ -62,8 +64,10 @@ if __name__ == "__main__":
 
     else:
         company_name = sys.argv[1]
-        results = get_tweets(company_name)
-        creating_file(company_name, results)
-
+        results = get_all_tweets(company_name)
+        if results == 0:
+            exit()
+        # creating_file(company_name, results, sys.argv[2])
+        creating_file(company_name, results, "w")
 
 

@@ -1,4 +1,5 @@
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import tweepy
 from tweepy import OAuthHandler
 import csv
@@ -9,13 +10,15 @@ import textrazor
 import urllib
 
 
+relevant_date = (datetime.today() + relativedelta(months=-6))
 
-rel_date = datetime.strptime("01/04/2020", "%d/%m/%Y")
+
 number_of_image = 1
 
 textrazor.api_key = "802487dc0385c08292d01d6ead89d12edc6278fd9915bbf8f7426c2e"
 
-def get_tweets(company_name):
+
+def get_all_tweets(company_name):
     """
      Gets the webinar details from tweets of provided company
 
@@ -32,31 +35,40 @@ def get_tweets(company_name):
 
     api = tweepy.API(auth, wait_on_rate_limit=True)
 
-    name = company_name
-
     # twitter limits to 200 tweets per request, we want the entire 200
     tweet_count = 200
 
     # getting the tweets from twitter, we use the "extended" mode
     # because this is the way to get the full text of the tweet
-    results = api.user_timeline(id=name, count=tweet_count, tweet_mode="extended")
+    results = api.user_timeline(id=company_name, count=tweet_count, tweet_mode="extended")
+
+    if len(results) == 0:
+        print("The Company doesn't have tweets")
+        return 0
+
+    while results[-1].created_at > relevant_date:
+        second_tweets = search_until(results[-1].id_str, company_name)
+        results = results + second_tweets
+
     return results
 
 
 def retweet_check(tweet):
     try:
-        return tweet.retweeted_status.full_text.lower()
+        tweet.retweeted_status.full_text = tweet.retweeted_status.full_text.lower()
     except AttributeError:  # Not a retweet
-        return tweet.full_text.lower()
+        tweet.full_text = tweet.full_text.lower()
 
 
-def creating_file(company_name, tweets):
+def creating_file(company_name, tweets, file_type="w"):
     """
     Create a csv file with all the relevant details of the company webinars
     and only do that for tweets that created after six month ago.
 
+    :param file_type: the type of file you want to be created (webinars or events)
+    :param tweets: the company tweets
     :param company_name: the company twitter handle
-                tweets: the company tweets
+
     :return: None
     """
     with open(f"./Webinars/{company_name} webinars.csv", "w", encoding="utf-8", newline='') as ofile:
@@ -65,28 +77,45 @@ def creating_file(company_name, tweets):
                                                    "webinar_link", "image_link", ])
         writer.writeheader()
 
-        # we only look for these keywords in the tweets
-        key_words = ["webinar", "webcast"]
-
-        while tweets[-1].created_at > rel_date:
-            second_tweets = search_until(tweets[-1].id_str, company_name)
-            tweets = tweets + second_tweets
-
-        ready_tweets = remove_duplicate_webinars(tweets)
+        if file_type == "w":
+            ready_tweets = get_tweets_include_webinars(tweets)
+        else:
+            ready_tweets = get_tweets_include_events(tweets)
 
         for tweet in ready_tweets:
-            if tweet.created_at > rel_date:
-                lower_full_text = retweet_check(tweet)
-                if any(word in lower_full_text for word in key_words):
-                    # ready_tweet = check_webinar_links(tweet)
-                    # extract_text_from_image(tweet, 1)
-                    writer.writerow({
-                        "company_name": company_name,
-                        "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
-                        "tweet_text": tweet.full_text,
-                        "image_link": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
-                        "webinar_link": unshorten_url(tweet.entities['urls'][0]['expanded_url']) if len(tweet.entities['urls']) != 0 else "",
-                    })
+            # ready_tweet = check_webinar_links(tweet)
+            # host_company = extract_text_from_image(tweet, 1)
+            writer.writerow({
+                    "company_name": company_name,
+                    "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
+                    "tweet_text": tweet.full_text,
+                    "image": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
+                    "link": tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else "",
+                })
+
+
+def get_tweets_include_events(tweets):
+    # we only look for these keywords in the tweets
+    key_words = ["summit", " event ", "conference", "podcast"]
+
+    filtered_list = list(filter(lambda tweet: tweet.created_at > relevant_date, tweets))
+    for tweet in filtered_list:
+        retweet_check(tweet)
+    relevant_tweets = list(filter(lambda tweet: any(word in tweet.full_text for word in key_words), filtered_list))
+    results = remove_duplicate_webinars(relevant_tweets)
+    return results
+
+
+def get_tweets_include_webinars(tweets):
+    # we only look for these keywords in the tweets
+    key_words = ["webinar", "webcast"]
+
+    filtered_list = list(filter(lambda tweet: tweet.created_at > relevant_date, tweets))
+    for tweet in filtered_list:
+        retweet_check(tweet)
+    relevant_tweets = list(filter(lambda tweet: any(word in tweet.full_text for word in key_words), filtered_list))
+    results = remove_duplicate_webinars(relevant_tweets)
+    return results
 
 
 def getting_tweets_data(tweets, company_name):
@@ -117,7 +146,8 @@ def search_until(last_id, company_name):
     """
          Creating a request to twitter and get 200 tweets that are until a  specific date(last_date)
 
-         :param last_date: the company twitter handle
+         :param last_id: is the max_id of the last tweet we have.
+                company_name: the company twitter handle
          :return: the relevant data of the tweets.
     """
     consumer_key = 'CzPmtFS34RHV78Yl3U2fRgr6V'
@@ -128,6 +158,7 @@ def search_until(last_id, company_name):
     auth = OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_secret)
     api = tweepy.API(auth, wait_on_rate_limit=True)
+    # max_id – Returns only statuses with an ID less than (that is, older than) or equal to the specified ID.
     result = api.user_timeline(id=company_name, count=200, tweet_mode='extended', max_id=last_id)
     return result
 
@@ -142,12 +173,15 @@ def remove_duplicate_webinars(tweets):
     seen = {}
     for tweet in tweets:
         if len(tweet.entities['urls']) != 0:
-            expanded_url = unshorten_url(tweet.entities['urls'][0]['expanded_url'])
+            expanded_url = tweet.entities['urls'][0]['expanded_url']
             try:
-                expanded_url = unshorten_url(tweet.entities['urls'][0]['expanded_url'])
+                tweet.entities['urls'][0]['expanded_url'] = unshorten_url(tweet.entities['urls'][0]['expanded_url'])
             except requests.exceptions.ConnectionError:
+                tweet.entities['urls'][0]['expanded_url'] = expanded_url
                 requests.status_code = "Connection refused"
-                expanded_url = ""
+
+            expanded_url = tweet.entities['urls'][0]['expanded_url']
+
             if expanded_url in seen.keys():
                 tweets.remove(tweet)
             else:
@@ -193,6 +227,8 @@ def extract_text_from_image(tweet, image_num):
 
         for entity in response.entities():
             print(entity.id, entity.freebase_types)
+            # if "/business/business_operation" in entity.freebase_types:
+            #     return entity.id
 
 
 def unshorten_url(url):
