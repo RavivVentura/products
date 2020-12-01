@@ -44,7 +44,7 @@ def get_all_tweets(company_name):
 
     if len(results) == 0:
         print("The Company doesn't have tweets")
-        return 0
+        return []
 
     while results[-1].created_at > relevant_date:
         second_tweets = search_until(results[-1].id_str, company_name)

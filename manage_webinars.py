@@ -15,6 +15,8 @@ def filter_date_tweet(start_date, tweets):
                 tweets: the tweets of the company profile (200 because of the twitter limit)
          :return: the tweets that created after start_date
     """
+    if len(tweets) == 0:
+        return []
     filtered_tweets = []
     for tweet in tweets:
         if tweet.created_at > start_date:
@@ -39,7 +41,12 @@ def monthly_update(start_date, file):
         for row in companies_file:
             company = row['twitter']
             tweets = get_all_tweets(company)
+            print("after get all tweets")
             relevant_tweets = filter_date_tweet(start_date, tweets)
+            print("after filter date tweets")
+            if not relevant_tweets:
+                print(f"finished writing {company} updates")
+                continue
             tweets_data = getting_tweets_data(relevant_tweets, company)
             for tweet in tweets_data:
                 writer.writerow({
