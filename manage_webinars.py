@@ -1,8 +1,8 @@
 import sys
 import tweepy
-from webinars import get_all_tweets
-from webinars import creating_file
-from webinars import getting_tweets_data
+from urllib.request import urlopen
+from lxml.html import parse
+from webinars import get_all_tweets, remove_duplicate_webinars, creating_file, getting_tweets_data
 from datetime import datetime
 from webinars import search_until
 import csv
@@ -26,10 +26,10 @@ def filter_date_tweet(start_date, tweets):
 
 def monthly_update(start_date, file):
     """
-             Create a csv file with all the companies webinars since the start date
-             :param start_date: the date that from him we want the tweets
-                    file: file with all the companies names that we want to update their webinars
-             :return: none
+         Create a csv file with all the companies webinars since the start date
+         :param start_date: the date that from him we want the tweets
+                file: file with all the companies names that we want to update their webinars
+         :return: none
     """
     month = start_date.month
     year = start_date.year
@@ -41,28 +41,32 @@ def monthly_update(start_date, file):
         for row in companies_file:
             company = row['twitter']
             tweets = get_all_tweets(company)
-            print("after get all tweets")
             relevant_tweets = filter_date_tweet(start_date, tweets)
-            print("after filter date tweets")
             if not relevant_tweets:
-                print(f"finished writing {company} updates")
                 continue
-            tweets_data = getting_tweets_data(relevant_tweets, company)
+            else:
+                wanted_tweets = remove_duplicate_webinars(relevant_tweets)
+            tweets_data = getting_tweets_data(wanted_tweets, company)
             for tweet in tweets_data:
                 writer.writerow({
                         "company_name": tweet["company_name"],
                         "tweet_link": tweet["tweet_link"],
                         "tweet_text": tweet["tweet_text"],
                         "image": tweet["image"],
-                        "link": tweet["link"]
+                        "link": tweet["link"],
+                        "name": tweet["name"],
+                        "start_date": tweet["start_date"],
+                        "description": tweet["description"]
                     })
             print(f"finished writing {company} updates")
 
 
 if __name__ == "__main__":
-    # checking if the command is to create a file for new company or making a monthly update
-    # types of commands : python manage_webinars.py Companies_list.csv since_date ,
-    #                     python manage_webinars.py CompanyTwitterName
+    """ 
+        checking if the command is to create a file for new company or making a monthly update
+        types of commands : python manage_webinars.py Companies_list.csv since_date ,
+                            python manage_webinars.py CompanyTwitterName
+    """
     if "csv" in sys.argv[1]:
         file_name = sys.argv[1]
         date = sys.argv[2]
@@ -72,9 +76,22 @@ if __name__ == "__main__":
     else:
         company_name = sys.argv[1]
         results = get_all_tweets(company_name)
+        print("got all tweets")
         if results == 0:
             exit()
         # creating_file(company_name, results, sys.argv[2])
         creating_file(company_name, results, "w")
 
 
+# Code for Test:
+# test_file = csv.DictReader(open("./Test/Tweeter webinar test - Sheet1.csv"))
+#   for row in test_file:
+#       company = row['twitter']
+#       company_name = company[1:]
+#       results = get_all_tweets(company_name)
+#       print("got all tweets")
+#       if results == 0:
+#           print("company don't have tweets")
+#           continue
+#       creating_file(company_name, results, "w")
+#       print(f"created file of {company_name}")
