@@ -1,10 +1,6 @@
 import sys
-import tweepy
-from urllib.request import urlopen
-from lxml.html import parse
 from webinars import get_all_tweets, remove_duplicate_webinars, creating_file, getting_tweets_data
 from datetime import datetime
-from webinars import search_until
 import csv
 
 

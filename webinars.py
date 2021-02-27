@@ -5,9 +5,6 @@ from tweepy import OAuthHandler
 import csv
 import requests
 from urllib.request import urlopen
-from lxml.html import parse
-from pytesseract import Output
-import json
 from bs4 import BeautifulSoup
 import pytesseract
 from PIL import Image
