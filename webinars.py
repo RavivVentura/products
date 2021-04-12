@@ -57,7 +57,6 @@ def get_all_tweets(company_name):
         results = results + second_tweets
     return results
 
-
 def retweet_check(tweet):
     try:
         tweet.retweeted_status.full_text = tweet.retweeted_status.full_text.lower()
@@ -76,7 +75,7 @@ def creating_file(company_name, tweets, file_type="w"):
 
     :return: None
     """
-    with open(f"./Webinars/{company_name} webinars.csv", "w", encoding="utf-8", newline='') as ofile:
+    with open(f"Webinars/{company_name} webinars.csv", "w", encoding="utf-8", newline='') as ofile:
         writer = csv.DictWriter(ofile, fieldnames=["company_name", "name", "description", "link", "start_date",
                                                    "host_company_domains", "image", "tweet_link", "tweet_text",
                                                    "webinar_link", "image_link", ])
@@ -85,6 +84,11 @@ def creating_file(company_name, tweets, file_type="w"):
         if file_type == "w":
             ready_tweets = get_tweets_include_webinars(tweets)
             print("got webinar tweets")
+            if len(ready_tweets) == 0:
+                no_ready_tweets_message = "couldn't find any webinar on Twitter, please search manually on Google and on company's website."
+                writer.writerow({
+                    "company_name": no_ready_tweets_message,
+                })
         else:
             ready_tweets = get_tweets_include_events(tweets)
 
@@ -260,20 +264,20 @@ def extract_text_from_image(tweet):
         filename = number_of_image
         try:
             # saving the webinar's image
-            urllib.request.urlretrieve(image_url, f"./Webinars_Images/{filename}.jpg")
+            urllib.request.urlretrieve(image_url, f"Webinars_Images/{filename}.jpg")
         except:
             print("couldn't save image")
 
-        pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Shani\AppData\Local\Tesseract-OCR\tesseract.exe'
+        pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
-        with open(f"./Webinars_Images/{filename}.txt", "w") as text_file:
-            text_file.write(pytesseract.image_to_string(Image.open(f"./Webinars_Images/{filename}.jpg")))
+        with open(f"Webinars_Images/{filename}.txt", "w") as text_file:
+            text_file.write(pytesseract.image_to_string(Image.open(f"Webinars_Images/{filename}.jpg")))
             # os.remove(filename)
         number_of_image += 1
 
         client = textrazor.TextRazor(extractors=["entities", "topics", "phrases"])
         try:
-            response = client.analyze(pytesseract.image_to_string(Image.open(f"./Webinars_Images/{filename}.jpg")))
+            response = client.analyze(pytesseract.image_to_string(Image.open(f"Webinars_Images/{filename}.jpg")))
         except:
             response = ""
 
