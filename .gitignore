@@ -1,7 +1,7 @@
 Webinars/
 venv/
 Companies/
-Updates/
+Updates/cd
 .idea/
 Webinars_Images/
 Research/
@@ -11,4 +11,3 @@ Research/
 Dataset/
 test.py
 twitter/client_secret.json
-twitter/client_secret_old.json

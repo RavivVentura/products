@@ -1,4 +1,3 @@
-
 import pendulum
 import tweepy
 from tweepy import OAuthHandler
@@ -10,6 +9,7 @@ import pytesseract
 from PIL import Image
 import textrazor
 import urllib
+from twitter.google_drive_save import save_file_to_google_drive
 
 
 from_date = pendulum.today().subtract(months=6)
@@ -64,7 +64,7 @@ def retweet_check(tweet):
         tweet.full_text = tweet.full_text.lower()
 
 
-def creating_file(company_name, tweets, file_type="w"):
+def creating_file(company_name, tweets, folder_id, file_type="w"):
     """
     Create a csv file with all the relevant details of the company webinars
     and only do that for tweets that created after six month ago.
@@ -75,7 +75,8 @@ def creating_file(company_name, tweets, file_type="w"):
 
     :return: None
     """
-    with open(f"Webinars/{company_name} webinars.csv", "w", encoding="utf-8", newline='') as ofile:
+    file_name = str(company_name) + '_webinars.csv'
+    with open(f"./Webinars/{file_name}", "w", encoding="utf-8", newline='') as ofile:
         writer = csv.DictWriter(ofile, fieldnames=["company_name", "name", "description", "link", "start_date",
                                                    "host_company_domains", "image", "tweet_link", "tweet_text",
                                                    "webinar_link", "image_link", ])
@@ -115,6 +116,7 @@ def creating_file(company_name, tweets, file_type="w"):
                     "name": webinar_name,
                     "description": description,
                 })
+    save_file_to_google_drive(file_name, folder_id)
 
 
 def get_tweets_include_events(tweets):
