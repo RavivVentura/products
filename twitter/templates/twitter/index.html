@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Twitter Handle</title>
+</head>
+<body>
+<form action="" method="post">
+    <label for="twitter_handle">Please enter the company twitter handle : </label>
+    <input id="twitter_handle" type="text" name="twitter_handle" value="{{ current_handle }}">
+    {% csrf_token %}
+    <button type="submit" name="run_script">Run script</button>
+</form>
+{#{% if latest_twitter_handle_list %}#}
+{#    <ul>#}
+{#    {% for twitter_handle in latest_twitter_handle_list %}#}
+{#       <li><a href="/twitter/{{ twitter_handle.twitter_handle }}/">{{ twitter_handle.twitter_handle }}</a></li>#}
+{#    {% endfor %}#}
+{#   </ul>#}
+{#{% else %}#}
+{#    <p>No handels are available.</p>#}
+{#{% endif %}#}
+
+
+</body>
+
+</html>

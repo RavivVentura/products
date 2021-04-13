@@ -10,3 +10,5 @@ Twitter/
 Research/
 Dataset/
 test.py
+twitter/client_secret.json
+twitter/client_secret_old.json
