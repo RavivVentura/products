@@ -6,8 +6,11 @@
 </head>
 <body>
 <form action="" method="post">
-    <label for="twitter_handle">Please enter the company twitter handle : </label>
-    <input id="twitter_handle" type="text" name="twitter_handle" value="{{ current_handle }}">
+    <label for="details">Please enter the following details: </label><br><br>
+    <label for="twitter_handle">company twitter handle</label>
+    <input id="twitter_handle" type="text" name="twitter_handle" value="{{ current_handle }}"><br>
+    <label for="folder_id">drive folder id</label>
+    <input id="folder_id" type="text" name="folder_id" value="{{ current_folder_id }}"><br>
     {% csrf_token %}
     <button type="submit" name="run_script">Run script</button>
 </form>
