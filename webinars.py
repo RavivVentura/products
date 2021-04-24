@@ -6,13 +6,13 @@ import requests
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import pytesseract
-from PIL import Image
+from PIL import Image #need to be install poetry
 import textrazor
-import urllib
+import urllib #need to be install poetry
 from twitter.google_drive_save import save_file_to_google_drive
 
 
-from_date = pendulum.today().subtract(months=6)
+from_date = pendulum.today().subtract(months=12)
 # relevant_date = (datetime.today() + relativedelta(months=-6))
 
 
@@ -72,6 +72,7 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
     :param file_type: the type of file you want to be created (webinars or events)
     :param tweets: the company tweets
     :param company_name: the company twitter handle
+    :param folder_id: the id of the drive folder (in the url)
 
     :return: None
     """
