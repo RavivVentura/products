@@ -47,3 +47,18 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
+
+# Twiiter git ignore
+Webinars/
+venv/
+Companies/
+Updates/cd
+.idea/
+Webinars_Images/
+Research/
+Test/
+Twitter/
+Research/
+Dataset/
+test.py
+twitter/client_secret.json
