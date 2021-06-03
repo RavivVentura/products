@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class TwitterConfig(AppConfig):
+class TwitterServiceConfig(AppConfig):
     name = 'twitter'

@@ -1,5 +1,5 @@
 import sys
-from webinars import get_all_tweets, remove_duplicate_webinars, creating_file, getting_tweets_data
+from twitter.webinars import get_all_tweets, remove_duplicate_webinars, creating_file, getting_tweets_data
 from datetime import datetime
 import csv
 

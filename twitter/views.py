@@ -2,7 +2,7 @@ from django.http import HttpResponse, Http404
 from django.template import loader
 from twitter.models import TwitterHandle
 from django.shortcuts import render, get_object_or_404
-from manage_webinars import load_company_tweets_into_csv_file
+from twitter.manage_webinars import load_company_tweets_into_csv_file
 import requests
 
 def index(request):

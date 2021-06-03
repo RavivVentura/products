@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'blogs_service.apps.BlogsServiceConfig',
-    'twitter.apps.TwitterConfig',
+    'twitter.apps.TwitterServiceConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
