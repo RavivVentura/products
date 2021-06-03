@@ -17,7 +17,7 @@ def save_file_to_google_drive(file_name, folder_id, mime_type='text/csv'):
         'name': file_name,
         'parents': [folder_id]
     }
-    media = MediaFileUpload('./{0}'.format(file_name), mimetype=mime_type)
+    media = MediaFileUpload('./CSV_FILES/{0}'.format(file_name), mimetype=mime_type)
     service.files().create(
         body=file_metadate,
         media_body=media,

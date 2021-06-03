@@ -73,9 +73,9 @@ def get_blog_posts(rss):
             root.findall('channel/item')]
 
 def creat_csv_file():
-    with open(f"./{FILE_NAME}", "w", encoding="utf-8", newline='') as file:
+    with open(f"./CSV_FILES/{FILE_NAME}", "w", encoding="utf-8", newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['Title', 'Url', 'Description', 'Publish At'])
+        writer.writerow(['Title', 'Url', 'Description', 'Publish At', 'Company Url','Company blog url'])
         counter = 0
         for rss in blogs_rss_url:
             print("rss",rss)
@@ -83,6 +83,7 @@ def creat_csv_file():
             all_blogs_urls =[]
             #print("all_blogs",all_blogs_urls)
             for post in get_blog_posts(rss):
+                print("post", post)
                 print('url',post[1])
                 url_parser = urlparse(post[1])
                 #if post[1] in all_blogs_urls:
@@ -91,6 +92,8 @@ def creat_csv_file():
                 if any(url_parser in blog_url for blog_url in all_blogs_urls):
                     print("here")
                     continue
+                post.append(companies_urls[counter])
+                post.append(companies_blogs_url[counter])
                 writer.writerow(post)
             counter += 1
 def main():
