@@ -3,7 +3,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 def get_data_from_spreadsheet(spreadsheet_name ):
     scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_name('service_account.json', scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name('blogs_service/service_account.json', scope)
     client = gspread.authorize(creds)
     sheet = client.open(spreadsheet_name)
     # get the first sheet of the Spreadsheet

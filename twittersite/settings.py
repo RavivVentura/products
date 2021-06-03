@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'blogs_service.apps.BlogsServiceConfig',
     'twitter.apps.TwitterConfig',
     'django.contrib.admin',
     'django.contrib.auth',

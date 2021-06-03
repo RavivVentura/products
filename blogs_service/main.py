@@ -3,10 +3,11 @@ import csv
 from bs4 import BeautifulSoup
 from xml.etree import ElementTree as etree
 import psycopg2
-import read_data_from_spreadsheet
-import save_to_google_drive
+from blogs_service import read_data_from_spreadsheet
+#import save_to_google_drive
+from blogs_service import save_to_google_drive
 from datetime import date
-import db_connect
+#from blogs_service import db_connect
 from urllib.parse import urlparse
 
 DATE = date.today()
@@ -78,7 +79,8 @@ def creat_csv_file():
         counter = 0
         for rss in blogs_rss_url:
             print("rss",rss)
-            all_blogs_urls = db_connect.get_all_company_blogs_urls(companies_blogs_url[counter])
+            #all_blogs_urls = db_connect.get_all_company_blogs_urls(companies_blogs_url[counter])
+            all_blogs_urls =[]
             #print("all_blogs",all_blogs_urls)
             for post in get_blog_posts(rss):
                 print('url',post[1])
@@ -94,3 +96,4 @@ def creat_csv_file():
 def main():
     creat_csv_file()
     save_to_google_drive.save_file_to_google_drive(FILE_NAME, FOLDER_ID)
+#main()
