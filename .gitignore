@@ -49,7 +49,7 @@ Thumbs.db
 *.wmv
 
 # Twiiter git ignore
-Webinars/
+CSV_FILES/
 venv/
 Companies/
 Updates/cd
@@ -57,10 +57,11 @@ Updates/cd
 Webinars_Images/
 Research/
 Test/
-twitter/
 Research/
 Dataset/
 test.py
 twitter/client_secret.json
+
+
 blogs_service/client_secret.json
 blogs_service/service_account.json

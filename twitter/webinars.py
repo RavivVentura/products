@@ -77,7 +77,7 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
     :return: None
     """
     file_name = str(company_name) + '_webinars.csv'
-    with open(f"./Webinars/{file_name}", "w", encoding="utf-8", newline='') as ofile:
+    with open(f"./CSV_FILES/{file_name}", "w", encoding="utf-8", newline='') as ofile:
         writer = csv.DictWriter(ofile, fieldnames=["company_name", "name", "description", "link", "start_date",
                                                    "host_company_domains", "image", "tweet_link", "tweet_text",
                                                    "webinar_link", "image_link", ])

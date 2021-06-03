@@ -16,7 +16,7 @@ def save_file_to_google_drive(file_name, folder_id, mime_type='text/csv'):
         'name': file_name,
         'parents': [folder_id]
     }
-    media = MediaFileUpload('./Webinars/{0}'.format(file_name), mimetype=mime_type)
+    media = MediaFileUpload('./CSV_FILES/{0}'.format(file_name), mimetype=mime_type)
     service.files().create(
         body=file_metadate,
         media_body=media,
@@ -59,7 +59,7 @@ def save_file_to_google_drive(file_name, folder_id, mime_type='text/csv'):
 #
 # creats_drive_folder()
 
-# all_csv_files_name = os.listdir('../Webinars')
+# all_csv_files_name = os.listdir('../CSV_FILES')
 # for file_name in all_csv_files_name:
 #     save_file_to_google_drive(file_name)
 
