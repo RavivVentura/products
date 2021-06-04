@@ -1,10 +1,10 @@
 #from Google import Create_Service
-from blogs_service.Google import Create_Service
+from common.google_drive.Google import Create_Service
 from googleapiclient.http import MediaFileUpload #need to be install poetry
 from googleapiclient.discovery import build
 
 def connect_google_api():
-    CLIENT_SECRET_FILE = './client_secret.json'
+    CLIENT_SECRET_FILE = './common/client_secret.json'
     API_NAME = 'drive'
     API_VERSION = 'v3'
     SCOPES = ['https://www.googleapis.com/auth/drive']

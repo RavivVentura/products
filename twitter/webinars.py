@@ -9,7 +9,7 @@ import pytesseract
 from PIL import Image #need to be install poetry
 import textrazor
 import urllib #need to be install poetry
-from twitter.google_drive_save import save_file_to_google_drive
+from common.google_drive.save_to_google_drive import save_file_to_google_drive
 
 
 from_date = pendulum.today().subtract(months=12)

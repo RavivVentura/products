@@ -60,8 +60,8 @@ Test/
 Research/
 Dataset/
 test.py
-twitter/client_secret.json
 
 
-blogs_service/client_secret.json
-blogs_service/service_account.json
+
+common/client_secret.json
+common/service_account.json

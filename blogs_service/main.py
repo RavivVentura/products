@@ -2,10 +2,8 @@ import requests
 import csv
 from bs4 import BeautifulSoup
 from xml.etree import ElementTree as etree
-import psycopg2
-from blogs_service import read_data_from_spreadsheet
 #import save_to_google_drive
-from blogs_service import save_to_google_drive
+from common.google_drive import save_to_google_drive, read_data_from_spreadsheet
 from datetime import date
 #from blogs_service import db_connect
 from urllib.parse import urlparse
