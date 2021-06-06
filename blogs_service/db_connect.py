@@ -27,5 +27,3 @@ def get_all_company_blogs_urls(company_url=''):
             cursor.close()
             connection.close()
             print("PostgreSQL connection is closed")
-print(get_all_company_blogs_urls())
-#print(get_all_company_blogs_urls('http://pos.toasttab.com/blog/on-the-line'))
