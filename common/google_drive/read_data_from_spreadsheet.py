@@ -18,10 +18,10 @@ def export_all_values_from_spreadsheet(spreadsheet_name):
     companies_urls = []
     companies_blogs_urls = []
     for row in val_data:
-        if row[0] == 'Customer URL':
+        if row[0] == 'Company URL':
             continue
         blogs_rss_url.append(row[3])
-        companies_urls.append(row[1])
+        companies_urls.append(row[0])
         companies_blogs_urls.append(row[2])
     return blogs_rss_url, companies_urls, companies_blogs_urls
 
