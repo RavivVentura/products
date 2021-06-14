@@ -10,7 +10,7 @@ from PIL import Image #need to be install poetry
 import textrazor
 import urllib #need to be install poetry
 from common.google_drive.save_to_google_drive import save_file_to_google_drive
-
+import requests
 
 from_date = pendulum.today().subtract(months=12)
 # relevant_date = (datetime.today() + relativedelta(months=-6))
@@ -106,7 +106,7 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
                 start_date = results[0]
                 webinar_name = results[1]
                 description = results[2]
-
+            #print("webinar_name", webinar_name)
             writer.writerow({
                     "company_name": company_name,
                     "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
@@ -209,6 +209,18 @@ def search_until(last_id, company_name):
     return result
 
 
+def get_redirect_url(webinar_url):
+    response = requests.get(webinar_url)
+    if response.history:
+        #print("Request was redirected")
+        for resp in response.history:
+            print(resp.status_code, resp.url)
+        #print("Final destination:")
+        #print(response.status_code, response.url)
+    #else:
+        #print("Request was not redirected")
+
+
 def remove_duplicate_webinars(tweets):
     """
          remove duplicate webinars according to webinar link.
@@ -220,6 +232,7 @@ def remove_duplicate_webinars(tweets):
     for tweet in tweets:
         if len(tweet.entities['urls']) != 0:
             expanded_url = tweet.entities['urls'][0]['expanded_url']
+            print("expanded_url11111", expanded_url)
             try:
                 tweet.entities['urls'][0]['expanded_url'] = unshorten_url(tweet.entities['urls'][0]['expanded_url'])
             except requests.exceptions.ConnectionError:
@@ -227,9 +240,13 @@ def remove_duplicate_webinars(tweets):
                 requests.status_code = "Connection refused"
 
             expanded_url = tweet.entities['urls'][0]['expanded_url']
-
+            #get_redirect_url(expanded_url)
+            #print('expanded_url', expanded_url)
             if expanded_url in seen.keys():
+                #print("innnn ")
+                #print("first",len(tweets))
                 tweets.remove(tweet)
+                #print("second",len(tweets))
             else:
                 seen[expanded_url] = 1
     return tweets

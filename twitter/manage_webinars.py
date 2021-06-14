@@ -20,7 +20,7 @@ def filter_date_tweet(start_date, tweets):
     return filtered_tweets
 
 
-def monthly_update(start_date, file):
+def monthly_update(start_date, twitter_handle_list):
     """
          Create a csv file with all the companies webinars since the start date
          :param start_date: the date that from him we want the tweets
@@ -29,13 +29,16 @@ def monthly_update(start_date, file):
     """
     month = start_date.month
     year = start_date.year
-    with open(f"./Updates/{month} {year} webinars.csv", "w", encoding="utf-8", newline='') as ofile:
+    with open(f"./Updates/{month} {year} webinars_update.csv", "w", encoding="utf-8", newline='') as ofile:
         writer = csv.DictWriter(ofile, fieldnames=["company_name", "name", "description", "link", "start_date",
                                                    "host_company_domains", "image", "tweet_link", "tweet_text"])
         writer.writeheader()
-        companies_file = csv.DictReader(open(file))
+        #companies_file = csv.DictReader(open(file))
+        companies_file = twitter_handle_list
         for row in companies_file:
-            company = row['twitter']
+            #company = row['twitter']
+            print("company row", row)
+            company = row
             tweets = get_all_tweets(company)
             relevant_tweets = filter_date_tweet(start_date, tweets)
             if not relevant_tweets:
@@ -87,6 +90,10 @@ def load_company_tweets_into_csv_file(company_name ,folder_id):
     # creating_file(company_name, results, sys.argv[2])
     creating_file(company_name, results,folder_id, "w")
 
+def load_company_tweets_into_csv_file_from_csv_file_refresh(twitter_handle_list, date):
+    start_date = datetime.strptime(date, "%d.%m.%Y")
+    #print("startdate",start_date)
+    monthly_update(start_date, twitter_handle_list)
 
 # Code for Test:
 # test_file = csv.DictReader(open("./Test/Tweeter webinar test - Sheet1.csv"))

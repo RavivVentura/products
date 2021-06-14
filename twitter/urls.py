@@ -7,7 +7,8 @@ app_name = 'twitter'
 urlpatterns = [
     path('', views.index, name='index'),
     path('<str:twitter_handle>/<str:folder_id>', views.get_twitter_handle, name='get_twitter_handle'),
-    url(r'^getwebinars/', views.getwebinars ,name='getwebinars'),
+    path('webinars_to_refresh/<str:file_name>/<str:date>/<str:sheet_num>', views.get_webinars_to_refresh, name='get_webinars_to_refresh'),
+    url(r'^getwebinars/', views.getwebinars, name='getwebinars'),
 
 
     #path(regex=r'^user/(?P<username>\w{1,50})/$', view='views.get_twitter_handle')
