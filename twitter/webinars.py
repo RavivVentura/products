@@ -229,6 +229,7 @@ def remove_duplicate_webinars(tweets):
          :return: the tweets after removing the tweets that has the same webinar link.
     """
     seen = {}
+    ready_tweets = []
     for tweet in tweets:
         if len(tweet.entities['urls']) != 0:
             expanded_url = tweet.entities['urls'][0]['expanded_url']
@@ -243,13 +244,15 @@ def remove_duplicate_webinars(tweets):
             #get_redirect_url(expanded_url)
             #print('expanded_url', expanded_url)
             if expanded_url in seen.keys():
+                continue
                 #print("innnn ")
                 #print("first",len(tweets))
-                tweets.remove(tweet)
+                #ready_tweets.remove(tweet)
                 #print("second",len(tweets))
             else:
+                ready_tweets.append(tweet)
                 seen[expanded_url] = 1
-    return tweets
+    return ready_tweets
 
 
 def check_webinar_links(tweet):

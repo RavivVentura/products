@@ -27,6 +27,7 @@ def get_twitter_handle(request, twitter_handle , folder_id):
 def getwebinars(request):
     twitter_handle = request.GET.get('twitter_handle', '')
     folder_id = request.GET.get('folder_id', '')
+    print("hrhjerekl")
     load_company_tweets_into_csv_file(twitter_handle, folder_id)
     return render(request, 'twitter/detail.html', {'handle':twitter_handle})
 

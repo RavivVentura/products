@@ -2,6 +2,10 @@ import sys
 from twitter.webinars import get_all_tweets, remove_duplicate_webinars, creating_file, getting_tweets_data
 from datetime import datetime
 import csv
+from common.google_drive.save_to_google_drive import save_file_to_google_drive
+
+
+FOLDER_ID = '1wnssayUDEt3hHkfQJ7hFZzNyOXUvEQya'
 
 
 def filter_date_tweet(start_date, tweets):
@@ -29,16 +33,15 @@ def monthly_update(start_date, twitter_handle_list):
     """
     month = start_date.month
     year = start_date.year
-    with open(f"./Updates/{month} {year} webinars_update.csv", "w", encoding="utf-8", newline='') as ofile:
+    file_name = str(month) + str(year) + 'webinars_update.csv'
+    with open(f"./CSV_FILES/{file_name}", "w", encoding="utf-8", newline='') as ofile:
         writer = csv.DictWriter(ofile, fieldnames=["company_name", "name", "description", "link", "start_date",
                                                    "host_company_domains", "image", "tweet_link", "tweet_text"])
         writer.writeheader()
         #companies_file = csv.DictReader(open(file))
         companies_file = twitter_handle_list
-        for row in companies_file:
+        for company in companies_file:
             #company = row['twitter']
-            print("company row", row)
-            company = row
             tweets = get_all_tweets(company)
             relevant_tweets = filter_date_tweet(start_date, tweets)
             if not relevant_tweets:
@@ -58,6 +61,7 @@ def monthly_update(start_date, twitter_handle_list):
                         "description": tweet["description"]
                     })
             print(f"finished writing {company} updates")
+    save_file_to_google_drive(file_name, FOLDER_ID)
 
 
 if __name__ == "__main__":
@@ -92,7 +96,6 @@ def load_company_tweets_into_csv_file(company_name ,folder_id):
 
 def load_company_tweets_into_csv_file_from_csv_file_refresh(twitter_handle_list, date):
     start_date = datetime.strptime(date, "%d.%m.%Y")
-    #print("startdate",start_date)
     monthly_update(start_date, twitter_handle_list)
 
 # Code for Test:
