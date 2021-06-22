@@ -28,23 +28,24 @@ def export_all_values_from_spreadsheet(spreadsheet_name):
     blogs_rss_url = []
     companies_urls = []
     companies_blogs_urls = []
-    for row in val_data:
-        if row[0] == 'Company URL':
-            continue
+    for row in val_data[1:]:
         blogs_rss_url.append(row[3])
         companies_urls.append(row[0])
         companies_blogs_urls.append(row[2])
     return blogs_rss_url, companies_urls, companies_blogs_urls
 
-def get_all_twitter_handles_from_spredsheet(spreadsheet_name,sheet_num):
+def get_all_twitter_handles_and_folder_id_from_spredsheet(spreadsheet_name,sheet_num):
     val_data = get_data_from_spreadsheet(spreadsheet_name,sheet_num)
-    twitter_handles = []
+    twitter_handles = {}
     twitter_column = 0
+    folder_id_column = 0
+    headers = val_data[0]
+    for col_num , header in enumerate(headers):
+        if header.lower().strip() == 'twitter':
+            twitter_column = col_num
+        if header.lower().strip() == 'folder id':
+            folder_id_column = col_num
+    val_data = val_data[1:]
     for idx, row in enumerate(val_data):
-        if idx == 0:
-            for col in range(len(row)):
-                if row[col].lower().strip() == 'twitter':
-                    twitter_column = col
-            continue
-        twitter_handles.append(row[twitter_column])
+        twitter_handles[row[twitter_column]] = row[folder_id_column]
     return twitter_handles

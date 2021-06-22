@@ -6,9 +6,9 @@ import requests
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import pytesseract
-from PIL import Image #need to be install poetry
+from PIL import Image
 import textrazor
-import urllib #need to be install poetry
+import urllib
 from common.google_drive.save_to_google_drive import save_file_to_google_drive
 import requests
 
@@ -107,12 +107,22 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
                 webinar_name = results[1]
                 description = results[2]
             #print("webinar_name", webinar_name)
+
+            link = tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""
+            if len(link) > 0:
+                meta_results = extract_meta_from_url(link)
+
+            if meta_results:
+                if len(webinar_name) < 2:
+                    webinar_name = meta_results[0]
+                if len(description) < 2:
+                    description = meta_results[1]
             writer.writerow({
                     "company_name": company_name,
                     "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
                     "tweet_text": tweet.full_text,
                     "image": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
-                    "link": tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else "",
+                    "link": link,
                     "start_date": start_date,
                     "name": webinar_name,
                     "description": description,
@@ -168,12 +178,22 @@ def getting_tweets_data(tweets, company_name):
                 webinar_name = results[1]
                 description = results[2]
 
+            link = tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""
+            if len(link) > 0:
+                meta_results = extract_meta_from_url(link)
+
+            if meta_results:
+                if webinar_name == " ":
+                    webinar_name = meta_results[0]
+                if description == " ":
+                    description = meta_results[1]
+
             relevant_data = {"company_name": company_name,
                     "name": webinar_name,
                     "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
                     "tweet_text": tweet.full_text.encode("utf-8"),
                     "image": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
-                    "link": tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else "",
+                    "link": link,
                     "start_date": start_date,
                     "description": description}
             data.append(relevant_data)
@@ -208,19 +228,6 @@ def search_until(last_id, company_name):
 
     return result
 
-
-def get_redirect_url(webinar_url):
-    response = requests.get(webinar_url)
-    if response.history:
-        #print("Request was redirected")
-        for resp in response.history:
-            print(resp.status_code, resp.url)
-        #print("Final destination:")
-        #print(response.status_code, response.url)
-    #else:
-        #print("Request was not redirected")
-
-
 def remove_duplicate_webinars(tweets):
     """
          remove duplicate webinars according to webinar link.
@@ -233,26 +240,22 @@ def remove_duplicate_webinars(tweets):
     for tweet in tweets:
         if len(tweet.entities['urls']) != 0:
             expanded_url = tweet.entities['urls'][0]['expanded_url']
-            print("expanded_url11111", expanded_url)
             try:
                 tweet.entities['urls'][0]['expanded_url'] = unshorten_url(tweet.entities['urls'][0]['expanded_url'])
             except requests.exceptions.ConnectionError:
                 tweet.entities['urls'][0]['expanded_url'] = expanded_url
                 requests.status_code = "Connection refused"
 
-            expanded_url = tweet.entities['urls'][0]['expanded_url']
-            #get_redirect_url(expanded_url)
-            #print('expanded_url', expanded_url)
+            expanded_url = query_string_remove(tweet.entities['urls'][0]['expanded_url'])
             if expanded_url in seen.keys():
                 continue
-                #print("innnn ")
-                #print("first",len(tweets))
-                #ready_tweets.remove(tweet)
-                #print("second",len(tweets))
             else:
                 ready_tweets.append(tweet)
                 seen[expanded_url] = 1
     return ready_tweets
+
+def query_string_remove(url):
+    return url[:url.find('?')]
 
 
 def check_webinar_links(tweet):
@@ -329,7 +332,7 @@ def extract_text_from_image(tweet):
                 webinar_name = ""
         except:
             webinar_name = ""
-
+        extract_meta_from_url(tweet.entities['urls'][0]['expanded_url'])
         result = [webinar_date, webinar_name, description]
 
         return result
@@ -484,3 +487,19 @@ def get_sentence(response):
         return ""
 
     return wanted_sentences[0]
+
+
+def extract_meta_from_url(link):
+    response = requests.get(link)
+    soup = BeautifulSoup(response.text)
+    metas = soup.find_all('meta')
+    for meta in metas:
+        if 'name' in meta.attrs and (meta.attrs['name'] == 'description' or meta.attrs['name'] == 'twitter:description'):
+            description = (meta.attrs['content'])
+        if 'name' in meta.attrs and (meta.attrs['name'] == 'title' or meta.attrs['name'] == 'twitter:title'):
+            webinar_name = (meta.attrs['content'])
+    meta_results = [webinar_name, description]
+    return meta_results
+
+
+    #print(meta.attrs['content'] for meta in metas if 'name' in meta.attrs and meta.attrs['name'] == 'description')
