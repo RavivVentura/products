@@ -1,5 +1,5 @@
 import psycopg2
-def get_all_company_blogs_urls(company_url=''):
+def get_all_company_blogs_urls():
     try:
         connection = psycopg2.connect(
             host="helius.cskhyfjg9ihd.us-east-1.rds.amazonaws.com",
