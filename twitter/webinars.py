@@ -11,6 +11,8 @@ import textrazor
 import urllib
 from common.google_drive.save_to_google_drive import save_file_to_google_drive
 import requests
+import re
+from datetime import datetime
 
 from_date = pendulum.today().subtract(months=12)
 # relevant_date = (datetime.today() + relativedelta(months=-6))
@@ -109,6 +111,10 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
             #print("webinar_name", webinar_name)
 
             link = tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""
+            status_code = requests.get(link, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}).status_code
+            if status_code != 200:
+                continue
+
             if len(link) > 0:
                 meta_results = extract_meta_from_url(link)
 
@@ -129,6 +135,15 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
                 })
     save_file_to_google_drive(file_name, folder_id)
 
+
+# def check_response_url(link):
+#     try:
+#         resp = requests.get(link)
+#         resp.raise_for_status()
+#     except requests.exceptions.HTTPError as err:
+#         print(err)
+#         return False
+#     return True
 
 def get_tweets_include_events(tweets):
     # we only look for these keywords in the tweets
@@ -179,6 +194,11 @@ def getting_tweets_data(tweets, company_name):
                 description = results[2]
 
             link = tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""
+            status_code = requests.get(link, headers={
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}).status_code
+            if status_code != 200:
+                continue
+
             if len(link) > 0:
                 meta_results = extract_meta_from_url(link)
 
@@ -247,6 +267,7 @@ def remove_duplicate_webinars(tweets):
                 requests.status_code = "Connection refused"
 
             expanded_url = query_string_remove(tweet.entities['urls'][0]['expanded_url'])
+            tweet.entities['urls'][0]['expanded_url'] = expanded_url
             if expanded_url in seen.keys():
                 continue
             else:
@@ -255,7 +276,9 @@ def remove_duplicate_webinars(tweets):
     return ready_tweets
 
 def query_string_remove(url):
-    return url[:url.find('?')]
+    if '?' in url:
+        return url[:url.find('?')]
+    return url
 
 
 def check_webinar_links(tweet):
@@ -490,16 +513,42 @@ def get_sentence(response):
 
 
 def extract_meta_from_url(link):
-    response = requests.get(link)
-    soup = BeautifulSoup(response.text)
-    metas = soup.find_all('meta')
-    for meta in metas:
-        if 'name' in meta.attrs and (meta.attrs['name'] == 'description' or meta.attrs['name'] == 'twitter:description'):
-            description = (meta.attrs['content'])
-        if 'name' in meta.attrs and (meta.attrs['name'] == 'title' or meta.attrs['name'] == 'twitter:title'):
-            webinar_name = (meta.attrs['content'])
-    meta_results = [webinar_name, description]
-    return meta_results
+    try:
+        response = requests.get(link)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        metas = soup.find_all('meta')
+        text = soup.get_text().replace(',', ' ')
+        dates = []
+        webinar_name = ' '
+        description = ' '
+        patn = re.compile(r'\d{2} \w{3} \d{4}| \w{5} \d{2} \d{4}')
+        for meta in metas:
+            if 'name' in meta.attrs and (
+                    meta.attrs['name'] == 'description' or meta.attrs['name'] == 'twitter:description'):
+                description = (meta.attrs['content'])
+            if 'name' in meta.attrs and (meta.attrs['name'] == 'title' or meta.attrs['name'] == 'twitter:title'):
+                webinar_name = (meta.attrs['content'])
+            if 'property' in meta.attrs and meta.attrs['property'] == 'og:title':
+                webinar_name = (meta.attrs['content'])
+            if 'property' in meta.attrs and meta.attrs['property'] == 'og:description':
+                description = (meta.attrs['content'])
+        # for match in patn.findall(text):
+        #     try:
+        #         val = datetime.strptime(match, '%d %b %Y')
+        #         dates.append(val)
+        #     except ValueError:
+        #         pass  # ignore, this isn't a date
+        # if len(dates) == 0:
+        #     dates.append(' ')
+        meta_results = [webinar_name, description]
+        return meta_results
+    except Exception as e:
+        print("failed to get response from url:{} , the except:{}".format(link,e))
+
+
+
+
 
 
     #print(meta.attrs['content'] for meta in metas if 'name' in meta.attrs and meta.attrs['name'] == 'description')
+
