@@ -2,7 +2,6 @@ import pendulum
 import tweepy
 from tweepy import OAuthHandler
 import csv
-import requests
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import pytesseract
@@ -46,6 +45,7 @@ def get_all_tweets(company_name):
 
     # getting the tweets from twitter, we use the "extended" mode
     # because this is the way to get the full text of the tweet
+    #todo check if the try excpet dont make problems
     results = api.user_timeline(id=company_name, count=tweet_count, tweet_mode="extended")
 
     if len(results) == 0:
@@ -108,42 +108,35 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
                 start_date = results[0]
                 webinar_name = results[1]
                 description = results[2]
-            #print("webinar_name", webinar_name)
 
             link = tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""
-            status_code = requests.get(link, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}).status_code
-            if status_code != 200:
-                continue
+            try:
+                status_code = requests.get(link, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}).status_code
+            except Exception as e:
+                print("the exception is:{}".format(e))
+            else:
+                if status_code != 200:
+                    continue
 
-            if len(link) > 0:
-                meta_results = extract_meta_from_url(link)
+                if len(link) > 0:
+                    meta_results = extract_meta_from_url(link)
 
-            if meta_results:
-                if len(webinar_name) < 2:
-                    webinar_name = meta_results[0]
-                if len(description) < 2:
-                    description = meta_results[1]
-            writer.writerow({
-                    "company_name": company_name,
-                    "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
-                    "tweet_text": tweet.full_text,
-                    "image": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
-                    "link": link,
-                    "start_date": start_date,
-                    "name": webinar_name,
-                    "description": description,
-                })
+                if meta_results:
+                    if len(webinar_name) < 2:
+                        webinar_name = meta_results[0]
+                    if len(description) < 2:
+                        description = meta_results[1]
+                writer.writerow({
+                        "company_name": company_name,
+                        "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
+                        "tweet_text": tweet.full_text,
+                        "image": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
+                        "link": link,
+                        "start_date": start_date,
+                        "name": webinar_name,
+                        "description": description,
+                    })
     save_file_to_google_drive(file_name, folder_id)
-
-
-# def check_response_url(link):
-#     try:
-#         resp = requests.get(link)
-#         resp.raise_for_status()
-#     except requests.exceptions.HTTPError as err:
-#         print(err)
-#         return False
-#     return True
 
 def get_tweets_include_events(tweets):
     # we only look for these keywords in the tweets
@@ -251,7 +244,6 @@ def search_until(last_id, company_name):
 def remove_duplicate_webinars(tweets):
     """
          remove duplicate webinars according to webinar link.
-
          :param tweets: the tweets of the company
          :return: the tweets after removing the tweets that has the same webinar link.
     """
@@ -274,6 +266,7 @@ def remove_duplicate_webinars(tweets):
                 ready_tweets.append(tweet)
                 seen[expanded_url] = 1
     return ready_tweets
+
 
 def query_string_remove(url):
     if '?' in url:
@@ -399,8 +392,6 @@ def extract_webinar_date(tweet, entities):
         except:
             webinar_date = ""
 
-
-
     if not webinar_date:
         array_words = ["Today", "Tomorrow"]
         if array_words[0] in tweet.full_text:
@@ -511,17 +502,17 @@ def get_sentence(response):
 
     return wanted_sentences[0]
 
-
+#todo check else of try except
 def extract_meta_from_url(link):
     try:
         response = requests.get(link)
+    except Exception as e:
+        print("failed to get response from url:{} , the except:{}".format(link,e))
+    else:
         soup = BeautifulSoup(response.text, 'html.parser')
         metas = soup.find_all('meta')
-        text = soup.get_text().replace(',', ' ')
-        dates = []
         webinar_name = ' '
         description = ' '
-        patn = re.compile(r'\d{2} \w{3} \d{4}| \w{5} \d{2} \d{4}')
         for meta in metas:
             if 'name' in meta.attrs and (
                     meta.attrs['name'] == 'description' or meta.attrs['name'] == 'twitter:description'):
@@ -532,18 +523,8 @@ def extract_meta_from_url(link):
                 webinar_name = (meta.attrs['content'])
             if 'property' in meta.attrs and meta.attrs['property'] == 'og:description':
                 description = (meta.attrs['content'])
-        # for match in patn.findall(text):
-        #     try:
-        #         val = datetime.strptime(match, '%d %b %Y')
-        #         dates.append(val)
-        #     except ValueError:
-        #         pass  # ignore, this isn't a date
-        # if len(dates) == 0:
-        #     dates.append(' ')
         meta_results = [webinar_name, description]
         return meta_results
-    except Exception as e:
-        print("failed to get response from url:{} , the except:{}".format(link,e))
 
 
 
