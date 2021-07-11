@@ -19,7 +19,7 @@ kiwisolver==1.2.0
 lxml==4.6.2
 matplotlib==3.3.1
 networkx==2.4
-numpy==1.20.2
+numpy==1.21.0
 oauthlib==3.1.0
 packaging==20.9
 pendulum==2.1.2
