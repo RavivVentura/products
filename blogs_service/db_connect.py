@@ -1,12 +1,19 @@
 import psycopg2
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+env_path = Path('.') / '.env'
+load_dotenv(dotenv_path=env_path)
+
+
 def get_all_company_blogs_urls():
     try:
         connection = psycopg2.connect(
-            host="helius.cskhyfjg9ihd.us-east-1.rds.amazonaws.com",
-            database="helius",
-            user="helius_read",
-            password="22EwmwtW6R3m")
-
+            host=os.environ['HOST'],
+            database=os.environ['DATABASE'],
+            user=os.environ['DATABASE_USER'],
+            password=os.environ['DATABASE_PASSWORD'])
         cursor = connection.cursor()
         cursor.execute('select url from crawler_companyblogitem')
         # cursor.execute('select url from crawler_companyblogitem as cbi where cbi.company_blog_id = (select cb.uuid as company_id  from crawler_companyblog cb where url = %s)',(company_url,))

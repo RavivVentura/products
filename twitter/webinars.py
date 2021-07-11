@@ -10,6 +10,7 @@ import textrazor
 import urllib
 from common.google_drive.save_to_google_drive import save_file_to_google_drive
 import requests
+import os
 import re
 from datetime import datetime
 
@@ -19,9 +20,8 @@ from_date = pendulum.today().subtract(months=12)
 
 number_of_image = 1
 
-# textrazor.api_key = "bd75d8e752e4708e9ed10de767e405bd8967b87b093b98ac92676ec5"
-textrazor.api_key = "802487dc0385c08292d01d6ead89d12edc6278fd9915bbf8f7426c2e"
-
+textrazor.api_key = os.environ['TEXT_RAZOR_API_KEY']
+#textrazor.api_key = "802487dc0385c08292d01d6ead89d12edc6278fd9915bbf8f7426c2e"
 
 def get_all_tweets(company_name):
     """
@@ -30,10 +30,14 @@ def get_all_tweets(company_name):
      :param company_name: the company handle in twitter
      :return: the twitter object of the tweets
      """
-    consumer_key = 'CzPmtFS34RHV78Yl3U2fRgr6V'
-    consumer_secret = 'DT0SbM5JrJhbZrkpbRLhcUegKN5VYGnzWDXpIIfydhJNwJiCuC'
-    access_token = '1291269809238401027-nfUpPvj1L56g5UHey0KsyV4ai727Jm'
-    access_secret = 'fmNaUuFb8hNWCbFNNOO5tGb1Hyz1plZlBh2DI2uOTht4l'
+    # consumer_key = 'CzPmtFS34RHV78Yl3U2fRgr6V'
+    # consumer_secret = 'DT0SbM5JrJhbZrkpbRLhcUegKN5VYGnzWDXpIIfydhJNwJiCuC'
+    # access_token = '1291269809238401027-nfUpPvj1L56g5UHey0KsyV4ai727Jm'
+    # access_secret = 'fmNaUuFb8hNWCbFNNOO5tGb1Hyz1plZlBh2DI2uOTht4l'
+    consumer_key = os.environ['CONSUMER_KEY']
+    consumer_secret = os.environ['CONSUMER_SECRET']
+    access_token = os.environ['ACCESS_TOKEN']
+    access_secret = os.environ['ACCESS_SECRET']
 
     auth = OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_secret)
