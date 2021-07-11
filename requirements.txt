@@ -1,49 +1,86 @@
-asgiref==3.3.2
+asgiref==3.3.4
+awscli==1.19.33
 beautifulsoup4==4.9.3
-cachetools==4.2.1
-certifi==2020.12.5
+blis @ file:///home/stav/.cache/pypoetry/artifacts/c1/6a/53/ab49b0541a65090ca3787de6651b2c5cf228cc4a7b93c093bbbb5f415d/blis-0.7.4-cp38-cp38-manylinux2014_x86_64.whl
+botocore==1.20.33
+bs4==0.0.1
+cachetools @ file:///home/stav/.cache/pypoetry/artifacts/3e/3c/8e/36edc509dce5b8a4b7d861ce2ccedfe55d0fd2c76c183e908370c04b10/cachetools-4.2.1-py3-none-any.whl
+catalogue @ file:///home/stav/.cache/pypoetry/artifacts/57/83/63/f60d4fb3f9935d668b490a30ff8293682c271ab7ac6a5803c67ad300c4/catalogue-2.0.3-py3-none-any.whl
+certifi @ file:///home/stav/.cache/pypoetry/artifacts/a5/b1/71/0fb759c6550e4dc0a538f0fc47cdf7dcd23bae70385241ee92b4d5b87c/certifi-2020.12.5-py2.py3-none-any.whl
+cffi @ file:///home/stav/.cache/pypoetry/artifacts/cf/25/46/fba32f6d9f6905002c6effaf3af43b2dc09c22ec500ea40c30a8e7ca8f/cffi-1.14.5-cp38-cp38-manylinux1_x86_64.whl
 chardet==4.0.0
-cycler==0.10.0
-decorator==4.4.2
-Django==3.1.8
-google-api-core==1.26.3
-google-api-python-client==2.1.0
-google-auth==1.28.1
+chromedriver-binary @ file:///home/stav/.cache/pypoetry/artifacts/39/41/ea/df59402eaf85d19f841e00f2d1ca470bc32c905493c0f8a231e61b3725/chromedriver-binary-74.0.3729.6.0.tar.gz
+click @ file:///home/stav/.cache/pypoetry/artifacts/30/bc/bf/e00ffd8f0edf0294942e70e80e42a839bd2649d2c5b864e6389e526d2a/click-7.1.2-py2.py3-none-any.whl
+colorama==0.4.3
+cryptography @ file:///home/stav/.cache/pypoetry/artifacts/a2/0d/20/95fa12ee585d16b64030f70b5d5ebed15e10bc1a01f2107f5c485907bf/cryptography-3.4.7-cp36-abi3-manylinux2014_x86_64.whl
+cymem @ file:///home/stav/.cache/pypoetry/artifacts/ca/8e/37/15120086d6b07407d5d4c8b642a7bec13108a8b7c3a00ae2a35e205881/cymem-2.0.5-cp38-cp38-manylinux2014_x86_64.whl
+dj-database-url @ file:///home/stav/.cache/pypoetry/artifacts/86/81/2f/8da8bcd6372e6797609dd5d6191fd427ed8aeb7bd818cfbf8c2d7b4cde/dj_database_url-0.5.0-py2.py3-none-any.whl
+Django @ file:///home/stav/.cache/pypoetry/artifacts/c8/aa/df/b97e2added197738245b57cefc81a0a310ebcc95d754c8ce292dd8969f/Django-3.2-py3-none-any.whl
+django-environ @ file:///home/stav/.cache/pypoetry/artifacts/02/f5/07/088c90fb343e0afae07fa494be4114b30189c29231a92d744f3234fb0f/django_environ-0.4.5-py2.py3-none-any.whl
+docutils==0.15.2
+google-api-core @ file:///home/stav/.cache/pypoetry/artifacts/8a/a3/92/def96935ab97883b7b2671ce809429155648d6f6b50b28c8fadd96beaa/google_api_core-1.26.3-py2.py3-none-any.whl
+google-api-python-client @ file:///home/stav/.cache/pypoetry/artifacts/56/c1/ba/7106d61e8e5e5e2bb4b1f7ec4ef86187a0dde9153e114d6104e57bed5c/google_api_python_client-2.2.0-py2.py3-none-any.whl
+google-auth @ file:///home/stav/.cache/pypoetry/artifacts/30/cd/56/7aa745a51e4effbcc1c69449cd132e90630efed8ec673e4f049b2db116/google_auth-1.29.0-py2.py3-none-any.whl
 google-auth-httplib2==0.1.0
 google-auth-oauthlib==0.4.4
 googleapis-common-protos==1.53.0
+gspread==3.7.0
+gunicorn @ file:///home/stav/.cache/pypoetry/artifacts/eb/33/9c/43e158642e15413395d933fef80bb16fa6b50a6ed8dd157f506b6b2c03/gunicorn-20.1.0-py3-none-any.whl
 httplib2==0.19.1
 idna==2.10
-imageio==2.9.0
-kiwisolver==1.2.0
-lxml==4.6.2
-matplotlib==3.3.1
-networkx==2.4
-numpy==1.19.1
-oauthlib==3.1.0
+Jinja2 @ file:///home/stav/.cache/pypoetry/artifacts/1e/19/63/9b4675e143abad59de60e0e667815fd5e19dd0b28fc2815f9f957726d3/Jinja2-2.11.3-py2.py3-none-any.whl
+jmespath==0.10.0
+joblib @ file:///home/stav/.cache/pypoetry/artifacts/99/5d/16/954581189911abfb7964c29411008b77f05fc968eb150b76de0105298a/joblib-1.0.1-py3-none-any.whl
+lxml @ file:///home/stav/.cache/pypoetry/artifacts/04/a7/9d/779ed22e4208a91cb45cfe9694c25574635c8ac275889bb0f94e2ed918/lxml-4.6.3-cp38-cp38-manylinux2014_x86_64.whl
+MarkupSafe @ file:///home/stav/.cache/pypoetry/artifacts/35/5e/ca/be6dbd0c55edef35786f1f6959189a0bdc523ab487501dbc604366a387/MarkupSafe-1.1.1-cp38-cp38-manylinux2010_x86_64.whl
+murmurhash @ file:///home/stav/.cache/pypoetry/artifacts/99/c1/59/75a52b11305210d2b16251ce2dbcff345d77a00adbe3a3507a3e76c138/murmurhash-1.0.5-cp38-cp38-manylinux2014_x86_64.whl
+nltk @ file:///home/stav/.cache/pypoetry/artifacts/da/14/c4/0cae2d4e84a1622f581b8a0dfecd9e78107e2d208f8c8120d8a45bcafe/nltk-3.6.2-py3-none-any.whl
+numpy @ file:///home/stav/.cache/pypoetry/artifacts/f1/ae/78/3ebe5800b6c9e8aa76de3b8271caf876c7c2484d36018ed5088572f00c/numpy-1.20.2-cp38-cp38-manylinux2010_x86_64.whl
+oauth2client==4.1.3
+oauthlib @ file:///home/stav/.cache/pypoetry/artifacts/2a/c5/81/4a81a78315addb9d59efeeaf5d41fd9a0c5237c8bb8959ee225fd5cca5/oauthlib-3.1.0-py2.py3-none-any.whl
 packaging==20.9
+pandas==1.2.4
+pathy @ file:///home/stav/.cache/pypoetry/artifacts/82/6d/9e/c9b15aca57f284e12155af2d6ab134dfc199a73920431e7350e0f721ad/pathy-0.4.0-py3-none-any.whl
 pendulum==2.1.2
-Pillow==7.2.0
-protobuf==3.15.8
+Pillow==8.2.0
+preshed @ file:///home/stav/.cache/pypoetry/artifacts/f9/b7/0d/1caab8f6c606e6c5f86c52dc4a4f1f25b864815745958357cee910ce07/preshed-3.0.5-cp38-cp38-manylinux2014_x86_64.whl
+protobuf @ file:///home/stav/.cache/pypoetry/artifacts/94/23/04/34eb301ffa457f5a8a592db8404af8ebf51dff475fe08f8080f1ae7d8c/protobuf-3.15.8-cp38-cp38-manylinux1_x86_64.whl
+psycopg2==2.8.6
+psycopg2-binary @ file:///home/stav/.cache/pypoetry/artifacts/f1/6e/33/f8d3b1e2f4b03e4eeae89dc0d683d2794391876ba2b91216c5e5b42db4/psycopg2_binary-2.9.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
+pycparser @ file:///home/stav/.cache/pypoetry/artifacts/f1/03/25/40eb46f7bede64f78ba073e2141b8216e611cbcde72e3117c326560101/pycparser-2.20-py2.py3-none-any.whl
+pydantic @ file:///home/stav/.cache/pypoetry/artifacts/94/da/06/d11bedd9b1ee40f2c5c477760db8db75fcbe5c2a420645d85316de277a/pydantic-1.7.3-cp38-cp38-manylinux2014_x86_64.whl
+pyOpenSSL @ file:///home/stav/.cache/pypoetry/artifacts/eb/13/03/bd94c739c5b90c54b8ef8ab11834319939f01d8292c5e5f21f15f3333b/pyOpenSSL-20.0.1-py2.py3-none-any.whl
 pyparsing==2.4.7
 PySocks==1.7.1
 pytesseract==0.3.7
 python-dateutil==2.8.1
+python-dotenv==0.18.0
 pytz==2021.1
 pytzdata==2020.1
-PyWavelets==1.1.1
+PyYAML==5.4.1
+regex @ file:///home/stav/.cache/pypoetry/artifacts/15/00/04/5115ac21091b41f86b542dc12682001c0cddfbadc82b17ecd182409e3c/regex-2021.4.4-cp38-cp38-manylinux2014_x86_64.whl
 requests==2.25.1
 requests-oauthlib==1.3.0
-rsa==4.7.2
-scikit-image==0.17.2
-scipy==1.5.2
+rsa @ file:///home/stav/.cache/pypoetry/artifacts/3a/ab/43/a67c8d818350593872a5713ca125b95f465d62eee5ba7895de1194add1/rsa-4.7.2-py3-none-any.whl
+s3transfer==0.3.6
+selenium @ file:///home/stav/.cache/pypoetry/artifacts/e3/a0/ca/c11444fbdde04d02e88c3e01e6865d916a0b802a4561a999dce1f4ac0b/selenium-3.141.0-py2.py3-none-any.whl
 six==1.15.0
-soupsieve==2.2
+smart-open @ file:///home/stav/.cache/pypoetry/artifacts/b4/83/65/1194ee38cad26b4dc6a9b442118ccf63e6581df5abb2a4abe80e74b3f8/smart_open-3.0.0.tar.gz
+soupsieve==2.2.1
+spacy @ file:///home/stav/.cache/pypoetry/artifacts/de/bc/48/f9faf8cda4140688743b303b0b44f89874dbacd0bf2a6ca2be2260cb90/spacy-3.0.5-cp38-cp38-manylinux2014_x86_64.whl
+spacy-legacy @ file:///home/stav/.cache/pypoetry/artifacts/7e/0b/01/004bc21a5a3c566e930c8c186c9321ee025bbe0e70de8383aa60a32baf/spacy_legacy-3.0.2-py2.py3-none-any.whl
 sqlparse==0.4.1
+srsly @ file:///home/stav/.cache/pypoetry/artifacts/1f/1f/46/13bfd7f7e42967d9acf642c145a41269150d3cf68a5b572c43983c997e/srsly-2.4.1-cp38-cp38-manylinux2014_x86_64.whl
+textblob @ file:///home/stav/.cache/pypoetry/artifacts/fa/3a/9c/f1c1f28ba156c454bdd98164b70d3c39f557c714409a92b787b3ca443a/textblob-0.15.3-py2.py3-none-any.whl
 textrazor==1.4.0
-tifffile==2020.8.13
-tweepy==3.9.0
+thinc @ file:///home/stav/.cache/pypoetry/artifacts/75/fc/b1/74b19b96bf013db59df1fcef197981b02515faf3bf660a14e44aaf9871/thinc-8.0.3-cp38-cp38-manylinux2014_x86_64.whl
+tqdm @ file:///home/stav/.cache/pypoetry/artifacts/a2/d3/46/a2db44795fea0bf41840427c7b3260e93492ce359cf466964c9f3840a7/tqdm-4.60.0-py2.py3-none-any.whl
+tweepy==3.10.0
+tweety @ file:///home/stav/.cache/pypoetry/artifacts/97/ba/9b/111f6031bcad8dd3c307b9eda022719a5d4f4980385cd9120ea1f31c21/tweety-0.1.6.tar.gz
+typer @ file:///home/stav/.cache/pypoetry/artifacts/f7/2f/1f/ece68d771dcfa49af78a42ad43bb233c188b9b0ea444cd83313327a73e/typer-0.3.2-py3-none-any.whl
 uritemplate==3.0.1
 urllib3==1.26.4
+vaderSentiment @ file:///home/stav/.cache/pypoetry/artifacts/f2/81/f3/282f69e98f9a8a5fbf8f93d21df65152117c3b3ac8afdd8c8f67855d5c/vaderSentiment-3.3.2-py2.py3-none-any.whl
+wasabi @ file:///home/stav/.cache/pypoetry/artifacts/42/4a/9d/f75bd98be0123c02fb2a2dbb95d920914b644aced2fc781e2e4111685d/wasabi-0.8.2-py3-none-any.whl
