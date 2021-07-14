@@ -49,7 +49,6 @@ Thumbs.db
 *.wmv
 
 # Twiiter git ignore
-CSV_FILES/
 venv/
 Companies/
 Updates/cd
