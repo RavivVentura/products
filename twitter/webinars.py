@@ -11,6 +11,7 @@ import urllib
 from common.google_drive.save_to_google_drive import save_file_to_google_drive
 import requests
 import os
+#from twittersite.settings import  consumer_key,consumer_secret,access_secret,access_token
 import re
 from datetime import datetime
 
@@ -20,8 +21,8 @@ from_date = pendulum.today().subtract(months=12)
 
 number_of_image = 1
 
-textrazor.api_key = os.environ['TEXT_RAZOR_API_KEY']
-#textrazor.api_key = "802487dc0385c08292d01d6ead89d12edc6278fd9915bbf8f7426c2e"
+#textrazor.api_key = os.environ['TEXT_RAZOR_API_KEY']
+textrazor.api_key ="802487dc0385c08292d01d6ead89d12edc6278fd9915bbf8f7426c2e"
 
 def get_all_tweets(company_name):
     """
@@ -30,14 +31,11 @@ def get_all_tweets(company_name):
      :param company_name: the company handle in twitter
      :return: the twitter object of the tweets
      """
-    # consumer_key = 'CzPmtFS34RHV78Yl3U2fRgr6V'
-    # consumer_secret = 'DT0SbM5JrJhbZrkpbRLhcUegKN5VYGnzWDXpIIfydhJNwJiCuC'
-    # access_token = '1291269809238401027-nfUpPvj1L56g5UHey0KsyV4ai727Jm'
-    # access_secret = 'fmNaUuFb8hNWCbFNNOO5tGb1Hyz1plZlBh2DI2uOTht4l'
     consumer_key = os.environ['CONSUMER_KEY']
     consumer_secret = os.environ['CONSUMER_SECRET']
     access_token = os.environ['ACCESS_TOKEN']
     access_secret = os.environ['ACCESS_SECRET']
+
 
     auth = OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_secret)
@@ -51,7 +49,6 @@ def get_all_tweets(company_name):
     # because this is the way to get the full text of the tweet
     #todo check if the try excpet dont make problems
     results = api.user_timeline(id=company_name, count=tweet_count, tweet_mode="extended")
-
     if len(results) == 0:
         print("The Company doesn't have tweets")
         return []
@@ -530,10 +527,28 @@ def extract_meta_from_url(link):
         meta_results = [webinar_name, description]
         return meta_results
 
+def get_twitter_handle_by_html(company_url):
+    try:
+        response = requests.get(company_url , headers={
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'})
+    except Exception as e:
+        print("failed to get response from url:{} , the except:{}".format(company_url,e))
+    else:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        links = soup.find_all('a', href=True)
+        for link in links:
+            if 'https://twitter.com/' in link:
+                twitter_url = link
+                twitter_handle = twitter_url.replace('https://twitter.com/','')
+                break
+        return twitter_handle
 
 
 
 
 
-    #print(meta.attrs['content'] for meta in metas if 'name' in meta.attrs and meta.attrs['name'] == 'description')
+
+
+
+#print(meta.attrs['content'] for meta in metas if 'name' in meta.attrs and meta.attrs['name'] == 'description')
 
