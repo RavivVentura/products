@@ -9,7 +9,7 @@ def create_keyfile_dict():
         "type": os.environ.get("SHEET_TYPE"),
         "project_id": os.environ.get("SHEET_PROJECT_ID"),
         "private_key_id": os.environ.get("SHEET_PRIVATE_KEY_ID"),
-        "private_key": os.environ.get("SHEET_PRIVATE_KEY"),
+        "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDChH4Ogz15WbgH\nOUF18awkBJXwLsFtpgjBbS7hou3fKdIe+eI3xGhDIgfzdifyqtR2N9KA2yG8KtdB\nQ011VN2JB0ISlNH/qc1Fbo2/iTMWixOszdFji14AaAo4y65Hxguj8Z1z+dkcwNyj\nAV1w3kGNdDF+Fz7TvXPxPUeJmXFUW0qcrASEIclPiitve4GarBOyCyD4ZiuDtoO7\ntEOtMgyjlYXrtxlLi4kcGmuv/lOmpP4c1iMjGJpFG6J189QSrD9MFiXTVWnOvWtE\nUxTNmQUKCrdNaj8ADfrin6KxiG87HDpC5HYV1I12IqTOnOYomZ9vK8FMqr7sEXC6\nQlW5tnENAgMBAAECggEABe4gIbUilKaFk8LNGhlqFBcHszDZuMwNDEiV208qTVlr\nDIK1wNl+DD3nXCbIBP/sRkZhZohHuQLdWSICJIeX0WulOgfLdy3oEivSqno2UoOe\n7+++aHiBPyXs2dprz8hb5n2hPT3qvpOqplWOUbiU6wkV0TBIPBBUjpA9tBY3fEjW\nlX4gtWw4y4zHCVYK3cBjApFvLHEbV2qBXWeGMB7oSJKjukAwosqIIYgjaN/6qKm2\nawAXBEaWzJ1+n4DFFE1Q1FikYJb2JosjKClwip8rvP0AyX5DnhuwKiATy26iIRO4\nU1k9XVl3dgqKq+f9vWh0XqovIUZzH9TEGgMbnNeDwQKBgQDteOhaW6rLPWcZIf2Z\njgF+tBuOzAfZX3aC3LXRFk6K8CWGB8GovvI75GJyAWuEKS3uBjqv6VKGHaUoN66g\nddMZyhrmqQZupXLeuOU05OJOVlkmC7OUowEFd7GqpBPDAVNhgBlwEXYOmtapIvh7\n725+xyZxjRy3UND+JF3VcPNW5QKBgQDRsaObWlDISUlvTyW6dlbx4/88V+VlSzh4\nz4EwxuyuGZDDCy0wnZ5PANhmNGrk7vBjyvJRm/hsaIOk6QPIGp6TOo27jEh61x/K\n55riuFFyQtiMEWcVbk8Jr5NDtgR9HJc1pR9/JpnX1zJEIjQ4VJAe+bIN9a3BGZmi\nJkQh/QWnCQKBgBWoVkCPZac9hV6UbAWKHvbIRE8kqn6Xpz5OFMLp7uXa+wEbSf0y\n1PLDZHsTSBP4kXjI1qdedylGIN7nHSUDOep7NTLeLXj/29cWM8k8KquMUnsWzBz9\nNMWj4e83IZpCT7FvtmIzJXo1guhQCSt8ba5gSVBH11ucokLbXDdwIrFFAoGBAI90\niqwGToum75ExwWrd+L9FLmD29N2mZzznIMfg3xyAKvP0WncO7bW4q1LIe3ShLl3n\nAn3oSTzJB36zVr330BKDFWGAKDm5oGtspR6D4Fxd9M1mPnJ/45yJvCKvjESXYa72\nhySyoL7z3tST3cvHtk0qn7BDKhqXy+4NZcEm204ZAoGAPMO1cDHEz5soj6NxAe1p\nOaojiK9lOkA1h/LvlH6rRD4meXmx8t4QJN2Ic5Epk25UtJOhIcsXvVJdtUf+sG9U\nI+VRlmNBsQ8emGx7l9HTIksD0lBj9u+KvIzldjX3koVnQGvaNnLDuqo090FE/Ofo\ntuMC+7IgFw9JUAjgc17nkyU=\n-----END PRIVATE KEY-----\n",
         "client_email": os.environ.get("SHEET_CLIENT_EMAIL"),
         "client_id": os.environ.get("SHEET_CLIENT_ID"),
         "auth_uri": os.environ.get("SHEET_AUTH_URI"),
@@ -17,18 +17,6 @@ def create_keyfile_dict():
         "auth_provider_x509_cert_url": os.environ.get("SHEET_AUTH_PROVIDER_X509_CERT_URL"),
         "client_x509_cert_url": os.environ.get("SHEET_CLIENT_X509_CERT_URL")
     }
-    # variables_keys = {
-    #     "type": "service_account",
-    #     "project_id": "newdashboard-308009",
-    #     "private_key_id": "80112b60661e835d370c6c472f0efa50bc11792e",
-    #     "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDChH4Ogz15WbgH\nOUF18awkBJXwLsFtpgjBbS7hou3fKdIe+eI3xGhDIgfzdifyqtR2N9KA2yG8KtdB\nQ011VN2JB0ISlNH/qc1Fbo2/iTMWixOszdFji14AaAo4y65Hxguj8Z1z+dkcwNyj\nAV1w3kGNdDF+Fz7TvXPxPUeJmXFUW0qcrASEIclPiitve4GarBOyCyD4ZiuDtoO7\ntEOtMgyjlYXrtxlLi4kcGmuv/lOmpP4c1iMjGJpFG6J189QSrD9MFiXTVWnOvWtE\nUxTNmQUKCrdNaj8ADfrin6KxiG87HDpC5HYV1I12IqTOnOYomZ9vK8FMqr7sEXC6\nQlW5tnENAgMBAAECggEABe4gIbUilKaFk8LNGhlqFBcHszDZuMwNDEiV208qTVlr\nDIK1wNl+DD3nXCbIBP/sRkZhZohHuQLdWSICJIeX0WulOgfLdy3oEivSqno2UoOe\n7+++aHiBPyXs2dprz8hb5n2hPT3qvpOqplWOUbiU6wkV0TBIPBBUjpA9tBY3fEjW\nlX4gtWw4y4zHCVYK3cBjApFvLHEbV2qBXWeGMB7oSJKjukAwosqIIYgjaN/6qKm2\nawAXBEaWzJ1+n4DFFE1Q1FikYJb2JosjKClwip8rvP0AyX5DnhuwKiATy26iIRO4\nU1k9XVl3dgqKq+f9vWh0XqovIUZzH9TEGgMbnNeDwQKBgQDteOhaW6rLPWcZIf2Z\njgF+tBuOzAfZX3aC3LXRFk6K8CWGB8GovvI75GJyAWuEKS3uBjqv6VKGHaUoN66g\nddMZyhrmqQZupXLeuOU05OJOVlkmC7OUowEFd7GqpBPDAVNhgBlwEXYOmtapIvh7\n725+xyZxjRy3UND+JF3VcPNW5QKBgQDRsaObWlDISUlvTyW6dlbx4/88V+VlSzh4\nz4EwxuyuGZDDCy0wnZ5PANhmNGrk7vBjyvJRm/hsaIOk6QPIGp6TOo27jEh61x/K\n55riuFFyQtiMEWcVbk8Jr5NDtgR9HJc1pR9/JpnX1zJEIjQ4VJAe+bIN9a3BGZmi\nJkQh/QWnCQKBgBWoVkCPZac9hV6UbAWKHvbIRE8kqn6Xpz5OFMLp7uXa+wEbSf0y\n1PLDZHsTSBP4kXjI1qdedylGIN7nHSUDOep7NTLeLXj/29cWM8k8KquMUnsWzBz9\nNMWj4e83IZpCT7FvtmIzJXo1guhQCSt8ba5gSVBH11ucokLbXDdwIrFFAoGBAI90\niqwGToum75ExwWrd+L9FLmD29N2mZzznIMfg3xyAKvP0WncO7bW4q1LIe3ShLl3n\nAn3oSTzJB36zVr330BKDFWGAKDm5oGtspR6D4Fxd9M1mPnJ/45yJvCKvjESXYa72\nhySyoL7z3tST3cvHtk0qn7BDKhqXy+4NZcEm204ZAoGAPMO1cDHEz5soj6NxAe1p\nOaojiK9lOkA1h/LvlH6rRD4meXmx8t4QJN2Ic5Epk25UtJOhIcsXvVJdtUf+sG9U\nI+VRlmNBsQ8emGx7l9HTIksD0lBj9u+KvIzldjX3koVnQGvaNnLDuqo090FE/Ofo\ntuMC+7IgFw9JUAjgc17nkyU=\n-----END PRIVATE KEY-----\n",
-    #     "client_email": "dashboard@newdashboard-308009.iam.gserviceaccount.com",
-    #     "client_id": "108154524811434067945",
-    #     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    #     "token_uri": "https://oauth2.googleapis.com/token",
-    #     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    #     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/dashboard%40newdashboard-308009.iam.gserviceaccount.com"
-    # }
     return variables_keys
 
 def get_data_from_spreadsheet(spreadsheet_name,sheet_num=0):
@@ -79,6 +67,8 @@ def get_all_twitter_handles_and_folder_id_from_spredsheet(spreadsheet_name,sheet
             folder_id_column = col_num
     val_data = val_data[1:]
     for idx, row in enumerate(val_data):
+        company_url = row[url_column]
+        twitter_handle = get_twitter_handle_from_db_by_compnay_url()
         twitter_handles[row[twitter_column]] = row[folder_id_column]
     return twitter_handles
 
