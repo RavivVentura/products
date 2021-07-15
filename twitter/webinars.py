@@ -528,6 +528,7 @@ def extract_meta_from_url(link):
         return meta_results
 
 def get_twitter_handle_by_html(company_url):
+    twitter_handle =''
     try:
         response = requests.get(company_url , headers={
                 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'})

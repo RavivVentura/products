@@ -3,6 +3,7 @@ import psycopg2
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from twitter.webinars import get_twitter_handle_by_html
+import urllib.parse
 
 def create_keyfile_dict():
     variables_keys = {
@@ -53,13 +54,14 @@ def export_all_values_from_spreadsheet(spreadsheet_name):
         companies_blogs_urls.append(row[2])
     return blogs_rss_url, companies_urls, companies_blogs_urls
 
-def get_all_twitter_handles_and_folder_id_from_spredsheet(spreadsheet_name,sheet_num):
+def get_all_twitter_handles_and_folder_id_from_spredsheet(spreadsheet_name,sheet_num ,records):
     val_data = get_data_from_spreadsheet(spreadsheet_name,sheet_num)
     twitter_handles = {}
+    campanies_without_twitter_handle = []
     url_column, twitter_column, folder_id_column = 0, 0, 0
     headers = val_data[0]
     for col_num, header in enumerate(headers):
-        if header.lower.strip() == "company url":
+        if header.lower().strip() == "company url":
             url_column = col_num
         if header.lower().strip() == 'twitter':
             twitter_column = col_num
@@ -68,11 +70,15 @@ def get_all_twitter_handles_and_folder_id_from_spredsheet(spreadsheet_name,sheet
     val_data = val_data[1:]
     for idx, row in enumerate(val_data):
         company_url = row[url_column]
-        twitter_handle = get_twitter_handle_from_db_by_compnay_url()
-        twitter_handles[row[twitter_column]] = row[folder_id_column]
-    return twitter_handles
+        twitter_handle = extract_twitter_handles_from_db(records, company_url)
+        if twitter_handle == '':
+            campanies_without_twitter_handle.append(company_url)
+        else:
+            twitter_handles[twitter_handle] = row[folder_id_column]
+        #twitter_handles[row[twitter_column]] = row[folder_id_column]
+    return twitter_handles,campanies_without_twitter_handle
 
-def get_twitter_handle_from_db_by_compnay_url(company_url):
+def get_companies_twitter_handle_from_db():
     try:
         connection = psycopg2.connect(
             host=os.environ['HOST'],
@@ -81,29 +87,30 @@ def get_twitter_handle_from_db_by_compnay_url(company_url):
             password=os.environ['DATABASE_PASSWORD'])
         cursor = connection.cursor()
         cursor.execute('select  cc.url, twitter_url  from crawler_companyprofile as ccp join crawler_company as cc on ccp.company_id = cc.id')
-        # cursor.execute('select url from crawler_companyblogitem as cbi where cbi.company_blog_id = (select cb.uuid as company_id  from crawler_companyblog cb where url = %s)',(company_url,))
         records = cursor.fetchall()
-        companies_profile = {}
-        twitter_handle = ''
-        for row in records:
-            # print(idx ,":",row[0])
-            companies_profile[row[0]] = row[1]
-        if company_url in companies_profile.keys():
-            twitter_handle = companies_profile[company_url]
-            if twitter_handle is None:
-                twitter_handle = ''
-            else:
-                twitter_handle.replace('/', '')
-        if twitter_handle == '':
-            twitter_handle = get_twitter_handle_by_html(company_url)
-        return twitter_handle
-
+        return records
     except (Exception, psycopg2.Error) as error:
         print("Error while fetching data from PostgreSQL", error)
-
     finally:
         # closing database connection.
         if connection:
             cursor.close()
             connection.close()
             print("PostgreSQL connection is closed")
+
+def extract_twitter_handles_from_db(records , company_url):
+    companies_profile = {}
+    twitter_handle = ''
+    for row in records:
+        # print(idx ,":",row[0])
+        companies_profile[row[0]] = row[1]
+    if company_url in companies_profile.keys():
+        twitter_handle = companies_profile[company_url]
+        if twitter_handle is None:
+            twitter_handle = ''
+        else:
+            twitter_handle = twitter_handle.replace('/', '')
+    if twitter_handle == '':
+        company_url = "https://www." + company_url
+        twitter_handle = get_twitter_handle_by_html(company_url)
+    return twitter_handle
