@@ -20,7 +20,7 @@ def create_keyfile_dict():
     }
     return variables_keys
 
-def get_data_from_spreadsheet(spreadsheet_name,sheet_num=0):
+def get_data_from_spreadsheet_by_name(spreadsheet_name, sheet_num=0):
     scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
     #creds = ServiceAccountCredentials.from_json_keyfile_name('common/service_account.json', scope)
     creds = ServiceAccountCredentials.from_json_keyfile_dict(create_keyfile_dict(), scope)
@@ -32,7 +32,7 @@ def get_data_from_spreadsheet(spreadsheet_name,sheet_num=0):
     val_data = sheet_instance.get_all_values()
     return val_data
 
-def get_data_from_spreadsheet_url(spreadsheet_url,sheet_num=0):
+def get_data_from_spreadsheet_by_url(spreadsheet_url, sheet_num=0):
     scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
     creds = ServiceAccountCredentials.from_json_keyfile_name('common/service_account.json', scope)
     client = gspread.authorize(creds)
@@ -43,8 +43,8 @@ def get_data_from_spreadsheet_url(spreadsheet_url,sheet_num=0):
     val_data = sheet_instance.get_all_values()
     return val_data
 
-def export_all_values_from_spreadsheet(spreadsheet_name):
-    val_data = get_data_from_spreadsheet(spreadsheet_name)
+def export_all_blogs_data_from_spreadsheet(spreadsheet_name):
+    val_data = get_data_from_spreadsheet_by_name(spreadsheet_name)
     blogs_rss_url = []
     companies_urls = []
     companies_blogs_urls = []
@@ -55,9 +55,9 @@ def export_all_values_from_spreadsheet(spreadsheet_name):
     return blogs_rss_url, companies_urls, companies_blogs_urls
 
 def get_all_twitter_handles_and_folder_id_from_spredsheet(spreadsheet_name,sheet_num ,records):
-    val_data = get_data_from_spreadsheet(spreadsheet_name,sheet_num)
+    val_data = get_data_from_spreadsheet_by_name(spreadsheet_name, sheet_num)
     twitter_handles = {}
-    campanies_without_twitter_handle = []
+    companies_without_twitter_handle = []
     url_column, twitter_column, folder_id_column = 0, 0, 0
     headers = val_data[0]
     for col_num, header in enumerate(headers):
@@ -70,13 +70,17 @@ def get_all_twitter_handles_and_folder_id_from_spredsheet(spreadsheet_name,sheet
     val_data = val_data[1:]
     for idx, row in enumerate(val_data):
         company_url = row[url_column]
-        twitter_handle = extract_twitter_handles_from_db(records, company_url)
-        if twitter_handle == '':
-            campanies_without_twitter_handle.append(company_url)
-        else:
+        twitter_handle = row[twitter_column]
+        if twitter_handle:
             twitter_handles[twitter_handle] = row[folder_id_column]
-        #twitter_handles[row[twitter_column]] = row[folder_id_column]
-    return twitter_handles,campanies_without_twitter_handle
+        else:
+            twitter_handle = extract_twitter_handles_from_db(records, company_url)
+            if twitter_handle == '':
+                companies_without_twitter_handle.append(company_url)
+            else:
+                twitter_handles[twitter_handle] = row[folder_id_column]
+    return twitter_handles,companies_without_twitter_handle
+
 
 def get_companies_twitter_handle_from_db():
     try:
@@ -98,18 +102,21 @@ def get_companies_twitter_handle_from_db():
             connection.close()
             print("PostgreSQL connection is closed")
 
-def extract_twitter_handles_from_db(records , company_url):
+
+def extract_twitter_handles_from_db(records, company_url):
     companies_profile = {}
     twitter_handle = ''
     for row in records:
-        # print(idx ,":",row[0])
         companies_profile[row[0]] = row[1]
+
     if company_url in companies_profile.keys():
         twitter_handle = companies_profile[company_url]
+
         if twitter_handle is None:
             twitter_handle = ''
         else:
             twitter_handle = twitter_handle.replace('/', '')
+
     if twitter_handle == '':
         company_url = "https://www." + company_url
         twitter_handle = get_twitter_handle_by_html(company_url)

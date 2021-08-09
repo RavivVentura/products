@@ -11,7 +11,7 @@ DATE = date.today()
 FILE_NAME = str(DATE) + '_exported_blogs.csv'
 FOLDER_ID = '135Zey3_aLf3UdDDln4cf9E6arpA0MOFm'
 #blogs_rss_url, companies_urls, companies_blogs_url = [],[],[]
-blogs_rss_url, companies_urls, companies_blogs_url = read_data_from_spreadsheet.export_all_values_from_spreadsheet('rss list to update from')
+blogs_rss_url, companies_urls, companies_blogs_url = read_data_from_spreadsheet.export_all_blogs_data_from_spreadsheet('rss list to update from')
 
 def get_blog_posts(rss):
     URL = rss

@@ -11,9 +11,6 @@ import urllib
 from common.google_drive.save_to_google_drive import save_file_to_google_drive
 import requests
 import os
-#from twittersite.settings import  consumer_key,consumer_secret,access_secret,access_token
-import re
-from datetime import datetime
 
 from_date = pendulum.today().subtract(months=12)
 # relevant_date = (datetime.today() + relativedelta(months=-6))
@@ -36,7 +33,6 @@ def get_all_tweets(company_name):
     access_token = os.environ['ACCESS_TOKEN']
     access_secret = os.environ['ACCESS_SECRET']
 
-
     auth = OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_secret)
 
@@ -47,18 +43,19 @@ def get_all_tweets(company_name):
 
     # getting the tweets from twitter, we use the "extended" mode
     # because this is the way to get the full text of the tweet
-    #todo check if the try excpet dont make problems
     results = api.user_timeline(id=company_name, count=tweet_count, tweet_mode="extended")
     if len(results) == 0:
         print("The Company doesn't have tweets")
         return []
     last_date = pendulum.instance(results[-1].created_at)
+    #todo check if last_date should update in the while loop
     while last_date > from_date:
         second_tweets = search_until(results[-1].id_str, company_name)
         if not second_tweets:
             return results
         results = results + second_tweets
     return results
+
 
 def retweet_check(tweet):
     try:
@@ -127,6 +124,7 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
                         webinar_name = meta_results[0]
                     if len(description) < 2:
                         description = meta_results[1]
+                verify_webinar_extract_content_is_in_the_html(link,start_date,webinar_name,description)
                 writer.writerow({
                         "company_name": company_name,
                         "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
@@ -138,6 +136,18 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
                         "description": description,
                     })
     save_file_to_google_drive(file_name, folder_id)
+
+
+def verify_webinar_extract_content_is_in_the_html(link,start_date,webinar_name,description):
+    try:
+        response = requests.get(link, headers={
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'})
+    except Exception as e:
+        print("failed to get response from url:{} , the except:{}".format(link, e))
+    else:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        text = soup.get_text()
+
 
 def get_tweets_include_events(tweets):
     # we only look for these keywords in the tweets
@@ -242,6 +252,7 @@ def search_until(last_id, company_name):
 
     return result
 
+
 def remove_duplicate_webinars(tweets):
     """
          remove duplicate webinars according to webinar link.
@@ -259,7 +270,7 @@ def remove_duplicate_webinars(tweets):
                 tweet.entities['urls'][0]['expanded_url'] = expanded_url
                 requests.status_code = "Connection refused"
 
-            expanded_url = query_string_remove(tweet.entities['urls'][0]['expanded_url'])
+            expanded_url = remove_url_query_string(tweet.entities['urls'][0]['expanded_url'])
             tweet.entities['urls'][0]['expanded_url'] = expanded_url
             if expanded_url in seen.keys():
                 continue
@@ -269,7 +280,7 @@ def remove_duplicate_webinars(tweets):
     return ready_tweets
 
 
-def query_string_remove(url):
+def remove_url_query_string(url):
     if '?' in url:
         return url[:url.find('?')]
     return url
@@ -496,27 +507,26 @@ def get_sentence(response):
             if word in sentence:
                 wanted_sentences.append(sentence)
 
-    # for x in wanted_sentences:
-    #     print("wanted sentence: ", x)
     if not wanted_sentences:
         return ""
 
     return wanted_sentences[0]
 
-#todo check else of try except
+
 def extract_meta_from_url(link):
     try:
         response = requests.get(link)
+
     except Exception as e:
         print("failed to get response from url:{} , the except:{}".format(link,e))
+
     else:
         soup = BeautifulSoup(response.text, 'html.parser')
         metas = soup.find_all('meta')
         webinar_name = ' '
         description = ' '
         for meta in metas:
-            if 'name' in meta.attrs and (
-                    meta.attrs['name'] == 'description' or meta.attrs['name'] == 'twitter:description'):
+            if 'name' in meta.attrs and (meta.attrs['name'] == 'description' or meta.attrs['name'] == 'twitter:description'):
                 description = (meta.attrs['content'])
             if 'name' in meta.attrs and (meta.attrs['name'] == 'title' or meta.attrs['name'] == 'twitter:title'):
                 webinar_name = (meta.attrs['content'])
@@ -525,15 +535,20 @@ def extract_meta_from_url(link):
             if 'property' in meta.attrs and meta.attrs['property'] == 'og:description':
                 description = (meta.attrs['content'])
         meta_results = [webinar_name, description]
+
         return meta_results
 
+
 def get_twitter_handle_by_html(company_url):
-    twitter_handle =''
+    twitter_handle = ''
     try:
-        response = requests.get(company_url , headers={
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'})
+        response = requests.get(company_url, headers={
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) '
+                              'Chrome/50.0.2661.102 Safari/537.36'})
+
     except Exception as e:
         print("failed to get response from url:{} , the except:{}".format(company_url,e))
+
     else:
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find_all('a', href=True)
@@ -542,14 +557,7 @@ def get_twitter_handle_by_html(company_url):
                 twitter_url = link
                 twitter_handle = twitter_url.replace('https://twitter.com/','')
                 break
+
         return twitter_handle
 
-
-
-
-
-
-
-
-#print(meta.attrs['content'] for meta in metas if 'name' in meta.attrs and meta.attrs['name'] == 'description')
 

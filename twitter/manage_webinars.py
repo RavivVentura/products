@@ -86,7 +86,7 @@ if __name__ == "__main__":
         creating_file(company_name, results, "w")
 
 
-def load_company_tweets_into_csv_file(company_name ,folder_id):
+def load_company_tweets_into_csv_file(company_name, folder_id):
     results = get_all_tweets(company_name)
     print("got all tweets")
     if results == 0:
