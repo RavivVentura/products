@@ -4,15 +4,25 @@
     <meta charset="UTF-8">
     <title>Twitter Handle</title>
 </head>
+<style>
+    .single-company {
+        width: 250px;
+        height: 250px;
+        border-radius: 30px;
+        border: 1px solid black;
+        padding: 10px;
+    }
+</style>
 <body>
-<form action="" method="post">
-    <h1>You are in the main page of twitter</h1>
+<h1>You are in the main page of twitter</h1>
     <p>you can run the script for specific company by sending
     the twitter handle and the folder id (the folder where you want the file to be saved).<br>
     or you can run the update script for a list of companies <br>
         by sending the name of the spreadsheet, the date from which you want the update and the sheet number</p>
     <br><br>
-    <label for="details">Please enter the following details: </label><br><br>
+<div class="form-container single-company">
+    <form action="" method="post">
+        <label for="details">Please enter the following details: </label><br><br>
     <label for="twitter_handle">company twitter handle</label>
     <input id="twitter_handle" type="text" name="twitter_handle" value="{{ current_handle }}"><br>
     <label for="folder_id">drive folder id</label>
@@ -21,6 +31,7 @@
     <button type="submit" name="run_script">Run script</button>
     <br><br><br><br>
 </form>
+</div>
 <form action="" method="post">
     <p>run twitter script for all companies</p>
     {% csrf_token %}

@@ -8,9 +8,10 @@ import pytesseract
 from PIL import Image
 import textrazor
 import urllib
-from common.google_drive.save_to_google_drive import save_file_to_google_drive
+#from common.google_drive.save_to_google_drive import save_file_to_google_drive
 import requests
 import os
+from common.google_drive.send_email import send_email
 
 from_date = pendulum.today().subtract(months=12)
 # relevant_date = (datetime.today() + relativedelta(months=-6))
@@ -85,7 +86,7 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
 
         if file_type == "w":
             ready_tweets = get_tweets_include_webinars(tweets)
-            print("got webinar tweets")
+            print("got webinar tweets here")
             if len(ready_tweets) == 0:
                 no_ready_tweets_message = "couldn't find any webinar on Twitter, please search manually on Google and on company's website."
                 writer.writerow({
@@ -135,7 +136,9 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
                         "name": webinar_name,
                         "description": description,
                     })
-    save_file_to_google_drive(file_name, folder_id)
+    print("end creat file")
+    #save_file_to_google_drive(file_name, folder_id)
+    send_email(file_name)
 
 
 def verify_webinar_extract_content_is_in_the_html(link,start_date,webinar_name,description):

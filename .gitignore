@@ -62,11 +62,14 @@ Dataset/
 test.py
 Updates/
 token_drive_v3.pickle
-
-common/google_drive/send_email.py
+inputfile
+requirements2.txt
+temp
+dates_extract.py
 common/client_secret.json
 common/service_account.json
 .env
 
+db.sqlite3
 db.sqlite3
 *.pyc

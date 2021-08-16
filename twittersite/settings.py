@@ -64,7 +64,7 @@ ROOT_URLCONF = 'twittersite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -157,6 +157,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'stavforwork2@gmail.com'
+EMAIL_HOST_PASSWORD = 'SidanK1962!%%'
 
 # consumer_key = os.environ['CONSUMER_KEY']
 # consumer_secret = os.environ['CONSUMER_SECRET']

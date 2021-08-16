@@ -2,7 +2,7 @@ import sys
 from twitter.webinars import get_all_tweets, remove_duplicate_webinars, creating_file, getting_tweets_data
 from datetime import datetime
 import csv
-from common.google_drive.save_to_google_drive import save_file_to_google_drive
+#from common.google_drive.save_to_google_drive import save_file_to_google_drive
 
 
 FOLDER_ID = '1wnssayUDEt3hHkfQJ7hFZzNyOXUvEQya'
@@ -61,7 +61,8 @@ def monthly_update(start_date, twitter_handle_list):
                         "description": tweet["description"]
                     })
             print(f"finished writing {company} updates")
-    save_file_to_google_drive(file_name, FOLDER_ID)
+    #todo send mail
+    #save_file_to_google_drive(file_name, FOLDER_ID)
 
 
 if __name__ == "__main__":
