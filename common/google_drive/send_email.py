@@ -19,12 +19,11 @@ def send_email(file_name):
     # message = request.POST.get('message', '')
     # # from_email = request.POST.get('from_email', '')
     # if subject and message and from_email:
-    print('dir',os.path.isdir('./CSV_FILES'))
-    print('file', os.path.isfile('./CSV_FILES/opencomp_webinars.csv'))
+    # print('dir',os.path.isdir('./CSV_FILES'))
+    # print('file', os.path.isfile('./CSV_FILES/opencomp_webinars.csv'))
     try:
-        print("im here")
         message = EmailMessage("stav", file_name, settings.EMAIL_HOST_USER, ["stav@getbrew.com"])
-        print("creat message2")
+        print("creat message")
         #message.attach(file_name, img_data, 'text/csv')
         try:
             file = open("./CSV_FILES/{0}".format(file_name))

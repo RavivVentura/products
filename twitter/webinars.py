@@ -8,10 +8,9 @@ import pytesseract
 from PIL import Image
 import textrazor
 import urllib
-#from common.google_drive.save_to_google_drive import save_file_to_google_drive
+from common.google_drive.save_to_google_drive import save_file_to_google_drive
 import requests
 import os
-from common.google_drive.send_email import send_email
 
 from_date = pendulum.today().subtract(months=12)
 # relevant_date = (datetime.today() + relativedelta(months=-6))
@@ -55,7 +54,6 @@ def get_all_tweets(company_name):
         if not second_tweets:
             return results
         results = results + second_tweets
-        last_date = pendulum.instance(results[-1].created_at)
     return results
 
 
@@ -79,8 +77,6 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
     :return: None
     """
     file_name = str(company_name) + '_webinars.csv'
-    print('dir',os.path.isdir('./CSV_FILES'))
-    print('file', os.path.isfile('./CSV_FILES/opencomp_webinars.csv'))
     with open(f"./CSV_FILES/{file_name}", "w", encoding="utf-8", newline='') as ofile:
         writer = csv.DictWriter(ofile, fieldnames=["company_name", "name", "description", "link", "start_date",
                                                    "host_company_domains", "image", "tweet_link", "tweet_text",
@@ -89,7 +85,7 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
 
         if file_type == "w":
             ready_tweets = get_tweets_include_webinars(tweets)
-            print("got webinar tweets here")
+            print("got webinar tweets")
             if len(ready_tweets) == 0:
                 no_ready_tweets_message = "couldn't find any webinar on Twitter, please search manually on Google and on company's website."
                 writer.writerow({
@@ -112,36 +108,34 @@ def creating_file(company_name, tweets, folder_id, file_type="w"):
                 description = results[2]
 
             link = tweet.entities['urls'][0]['expanded_url'] if len(tweet.entities['urls']) != 0 else ""
-            # try:
-            #     status_code = requests.get(link, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}).status_code
-            # except Exception as e:
-            #     print("the exception is:{}".format(e))
-            # else:
-            #     if status_code != 200:
-            #         continue
+            try:
+                status_code = requests.get(link, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}).status_code
+            except Exception as e:
+                print("the exception is:{}".format(e))
+            else:
+                if status_code != 200:
+                    continue
 
-            if len(link) > 0:
-                meta_results = extract_meta_from_url(link)
+                if len(link) > 0:
+                    meta_results = extract_meta_from_url(link)
 
-            if meta_results:
-                if len(webinar_name) < 2:
-                    webinar_name = meta_results[0]
-                if len(description) < 2:
-                    description = meta_results[1]
-            verify_webinar_extract_content_is_in_the_html(link,start_date,webinar_name,description)
-            writer.writerow({
-                    "company_name": company_name,
-                    "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
-                    "tweet_text": tweet.full_text,
-                    "image": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
-                    "link": link,
-                    "start_date": start_date,
-                    "name": webinar_name,
-                    "description": description,
-                })
-    print("end creat file")
-    #save_file_to_google_drive(file_name, folder_id)
-    send_email(file_name)
+                if meta_results:
+                    if len(webinar_name) < 2:
+                        webinar_name = meta_results[0]
+                    if len(description) < 2:
+                        description = meta_results[1]
+                verify_webinar_extract_content_is_in_the_html(link,start_date,webinar_name,description)
+                writer.writerow({
+                        "company_name": company_name,
+                        "tweet_link": 'https://twitter.com/%s/status/%s' % (company_name, tweet.id_str),
+                        "tweet_text": tweet.full_text,
+                        "image": tweet.entities['media'][0]['media_url'] if 'media' in tweet.entities else "",
+                        "link": link,
+                        "start_date": start_date,
+                        "name": webinar_name,
+                        "description": description,
+                    })
+    save_file_to_google_drive(file_name, folder_id)
 
 
 def verify_webinar_extract_content_is_in_the_html(link,start_date,webinar_name,description):
